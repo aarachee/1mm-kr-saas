@@ -40,7 +40,7 @@ export default async function DashboardPage() {
             <CardTitle className="text-sm font-medium text-slate-500">내 링크 총 클릭 수</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-600">{totalClicks}</div>
+            <div className="text-3xl font-bold text-primary">{totalClicks}</div>
             <p className="text-xs text-slate-500 mt-1">내가 만든 모든 링크의 클릭 합계</p>
           </CardContent>
         </Card>

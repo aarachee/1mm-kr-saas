@@ -69,10 +69,10 @@ export function LinkItem({ link }: { link: any }) {
               <Input 
                 value={newCode} 
                 onChange={(e) => setNewCode(e.target.value)} 
-                className="h-8 w-40 border-blue-200 focus-visible:ring-blue-500"
+                className="h-8 w-40 border-primary/30 focus-visible:ring-primary"
                 autoFocus
               />
-              <Button size="sm" onClick={handleSave} disabled={loading} className="h-8 bg-blue-600 hover:bg-blue-700 text-white">
+              <Button size="sm" onClick={handleSave} disabled={loading} className="h-8 bg-primary hover:bg-primary/90 text-primary-foreground">
                 {loading ? "저장중..." : <CheckIcon />} 
                 완료
               </Button>
@@ -85,12 +85,12 @@ export function LinkItem({ link }: { link: any }) {
         ) : (
           /* 일반 모드 */
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-blue-600 text-lg">1mm.kr/{link.short_code}</span>
+            <span className="font-semibold text-primary text-lg">1mm.kr/{link.short_code}</span>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => setIsEditing(true)} 
-              className="h-6 px-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              className="h-6 px-2 text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
             >
               <PencilIcon />
               <span className="text-[10px] font-bold">PRO 커스텀</span>

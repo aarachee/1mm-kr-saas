@@ -21,11 +21,11 @@ export default async function DashboardLayout({
       <aside className="w-64 border-r bg-white dark:bg-slate-900 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b font-bold text-xl tracking-tight">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-blue-600">1mm</span>.kr
+            <span className="text-primary">1mm</span>.kr
           </Link>
         </div>
         <nav className="flex-1 px-4 py-6 space-y-2">
-          <Link href="/dashboard" className="flex items-center px-4 py-3 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400 rounded-md font-medium">
+          <Link href="/dashboard" className="flex items-center px-4 py-3 bg-primary/10 text-primary rounded-md font-medium">
             대시보드 홈
           </Link>
           <Link href="/dashboard" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-md font-medium transition-colors">
@@ -48,7 +48,7 @@ export default async function DashboardLayout({
             <span className="text-sm text-slate-600 dark:text-slate-300 font-medium hidden sm:inline-block">
               {user.email}
             </span>
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
               {user.email?.charAt(0).toUpperCase()}
             </div>
             <form action={async () => {

@@ -21,7 +21,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-[400px] shadow-lg border-slate-200/60">
         <CardHeader className="text-center pb-8 pt-10">
           <CardTitle className="text-3xl font-extrabold tracking-tight mb-2">
-            <span className="text-blue-600">1mm</span>.kr
+            <span className="text-primary">1mm</span>.kr
           </CardTitle>
           <CardDescription className="text-base">
             데이터 분석형 단축 링크 서비스

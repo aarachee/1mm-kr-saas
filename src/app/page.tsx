@@ -10,12 +10,12 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/80">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2 text-xl font-bold tracking-tight">
-            <span className="text-blue-600">1mm</span>.kr
+            <span className="text-primary">1mm</span>.kr
           </div>
           <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-            <Link href="#features" className="hover:text-blue-600 transition-colors">기능</Link>
-            <Link href="#pricing" className="hover:text-blue-600 transition-colors">요금제</Link>
-            <Link href="#contact" className="hover:text-blue-600 transition-colors">도입 문의</Link>
+            <Link href="#features" className="hover:text-primary transition-colors">기능</Link>
+            <Link href="#pricing" className="hover:text-primary transition-colors">요금제</Link>
+            <Link href="#contact" className="hover:text-primary transition-colors">도입 문의</Link>
           </nav>
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="hidden sm:inline-flex">로그인</Button>
@@ -29,7 +29,7 @@ export default function Home() {
         <section className="container mx-auto px-4 py-24 md:py-32 flex flex-col items-center text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-tight">
             가장 완벽한 데이터 분석,<br className="hidden md:block"/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-600">
               1mm.kr 단축 링크
             </span>
           </h1>
@@ -62,7 +62,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <Card className="border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-xl text-blue-600">정교한 A/B 테스트</CardTitle>
+                  <CardTitle className="text-xl text-primary">정교한 A/B 테스트</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-slate-600 dark:text-slate-400">하나의 단축 링크로 트래픽을 분산시켜 어떤 페이지가 더 전환율이 높은지 손쉽게 테스트하세요.</p>
