@@ -51,3 +51,29 @@ export async function createShortLink(formData: FormData): Promise<{ error?: str
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function updateShortCode(linkId: number, newCode: string): Promise<{ error?: string, success?: boolean }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: '로그인이 필요합니다.' }
+
+  if (!newCode || !/^[a-zA-Z0-9-_]+$/.test(newCode)) {
+    return { error: '영문, 숫자, 하이픈(-), 언더바(_)만 사용할 수 있습니다.' }
+  }
+
+  const { error } = await supabase
+    .from('links')
+    .update({ short_code: newCode })
+    .eq('id', linkId)
+    .eq('user_id', user.id) // 보안: 내 링크만 수정 가능
+
+  if (error) {
+    if (error.code === '23505') {
+      return { error: `이미 다른 사용자가 선점한 주소입니다: ${newCode}` }
+    }
+    return { error: '주소 변경에 실패했습니다.' }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}

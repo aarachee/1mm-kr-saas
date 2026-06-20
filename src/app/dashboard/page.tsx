@@ -96,7 +96,7 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <CopyButton shortCode={link.short_code} />
-                      <ProEditButton />
+                      <ProEditButton linkId={link.id} currentCode={link.short_code} />
                     </div>
                   </div>
                 </div>
