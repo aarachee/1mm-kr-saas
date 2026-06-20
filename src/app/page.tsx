@@ -1,65 +1,100 @@
-import Image from "next/image";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/80">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <span className="text-blue-600">1mm</span>.kr
+          </div>
+          <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+            <Link href="#features" className="hover:text-blue-600 transition-colors">기능</Link>
+            <Link href="#pricing" className="hover:text-blue-600 transition-colors">요금제</Link>
+            <Link href="#contact" className="hover:text-blue-600 transition-colors">도입 문의</Link>
+          </nav>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" className="hidden sm:inline-flex">로그인</Button>
+            <Button>무료로 시작하기</Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 py-24 md:py-32 flex flex-col items-center text-center">
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-tight">
+            가장 완벽한 데이터 분석,<br className="hidden md:block"/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+              1mm.kr 단축 링크
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
+            단순한 링크 단축을 넘어 A/B 테스트, 픽셀 삽입, 실시간 통계까지.<br/>
+            마케터와 크리에이터를 위한 단 하나의 플랫폼입니다.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+          
+          <div className="w-full max-w-xl flex flex-col sm:flex-row gap-3">
+            <Input 
+              type="url" 
+              placeholder="단축할 긴 URL을 입력하세요 (예: https://example.com/...)" 
+              className="h-12 text-base px-4 shadow-sm"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <Button className="h-12 px-8 text-base shadow-sm">단축하기</Button>
+          </div>
+          <p className="mt-4 text-sm text-slate-500">
+            회원가입 없이 무료로 1개의 링크를 테스트해 보세요.
+          </p>
+        </section>
+
+        {/* Features Preview */}
+        <section id="features" className="bg-white dark:bg-slate-900 py-20">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold mb-4">왜 1mm.kr 인가요?</h2>
+              <p className="text-slate-600 dark:text-slate-400">당신의 마케팅 성과를 1mm라도 더 끌어올리기 위한 기능들</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              <Card className="border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl text-blue-600">정교한 A/B 테스트</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 dark:text-slate-400">하나의 단축 링크로 트래픽을 분산시켜 어떤 페이지가 더 전환율이 높은지 손쉽게 테스트하세요.</p>
+                </CardContent>
+              </Card>
+              <Card className="border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl text-indigo-600">리타겟팅 픽셀</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 dark:text-slate-400">단축 링크 클릭 시 찰나의 순간 페이스북/구글 픽셀을 실행하여 잠재 고객 모수를 확보합니다.</p>
+                </CardContent>
+              </Card>
+              <Card className="border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl text-purple-600">멀티 링크(Link-in-Bio)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 dark:text-slate-400">크리에이터를 위한 전용 페이지. 버튼별 데이터 분석이 가능한 나만의 프로필을 만드세요.</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
       </main>
+      
+      {/* Footer */}
+      <footer className="border-t py-12 bg-white dark:bg-slate-950">
+        <div className="container mx-auto px-4 text-center text-slate-500">
+          <p>© 2026 1mm.kr All rights reserved.</p>
+        </div>
+      </footer>
     </div>
-  );
+  )
 }

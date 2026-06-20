@@ -1,0 +1,115 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { createClient } from "@/utils/supabase/server"
+import { createShortLink } from "../actions"
+import { CopyButton } from "@/components/CopyButton"
+
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // 1. 내 계정(user.id)으로 만든 링크만 가져오기
+  const { data: links } = await supabase
+    .from('links')
+    .select('*, clicks(count)')
+    .eq('user_id', user?.id)
+    .order('created_at', { ascending: false })
+    .limit(50) // 최근 50개까지 표시
+
+  // 2. 내 링크들의 총 클릭 수 합산하기
+  const totalClicks = links?.reduce((sum, link) => {
+    // @ts-ignore
+    return sum + (link.clicks?.[0]?.count || 0)
+  }, 0) || 0
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Top Action */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-xl border shadow-sm">
+        <div>
+          <h1 className="text-2xl font-bold">새 링크 단축하기</h1>
+          <p className="text-slate-500 text-sm mt-1">긴 URL을 입력하고 픽셀과 옵션을 설정하세요.</p>
+        </div>
+        <form action={createShortLink} className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
+          <Input name="longUrl" type="url" required placeholder="단축할 원본 주소 (https://...)" className="w-full sm:w-64" />
+          <Input name="pixelId" type="text" placeholder="FB 픽셀 ID (선택)" className="w-full sm:w-40" />
+          <Button type="submit">단축 생성</Button>
+        </form>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">내 링크 총 클릭 수</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-600">{totalClicks}</div>
+            <p className="text-xs text-slate-500 mt-1">내가 만든 모든 링크의 클릭 합계</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">생성된 내 링크</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{links?.length || 0}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-slate-500">전환된 픽셀 데이터</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">0</div>
+            <p className="text-xs text-slate-500 mt-1">Facebook & Google 타겟팅용 (준비중)</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Links */}
+      <Card>
+        <CardHeader>
+          <CardTitle>최근 생성된 내 링크</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {links && links.length > 0 ? (
+              links.map((link) => (
+                <div key={link.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-semibold text-blue-600">1mm.kr/{link.short_code}</span>
+                    <span className="text-xs text-slate-500 truncate max-w-xs">{link.long_url}</span>
+                    {link.pixel_id && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 w-max mt-1">
+                        픽셀 활성화됨
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-right hidden sm:block">
+                      {/* Supabase 조인 쿼리 결과에서 count 추출 */}
+                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                        {/* @ts-ignore */}
+                        {link.clicks?.[0]?.count || 0} 클릭
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        {new Date(link.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <CopyButton shortCode={link.short_code} />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-slate-500">
+                아직 생성된 단축 링크가 없습니다. 첫 링크를 만들어 보세요!
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
