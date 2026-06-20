@@ -32,8 +32,7 @@ export function LinkCreateForm() {
     <form id="link-create-form" action={handleSubmit} className="flex flex-col w-full gap-3">
       <div className="flex flex-col sm:flex-row w-full gap-2">
         <Input name="longUrl" type="url" required placeholder="원본 주소 (https://...)" className="w-full sm:flex-1" />
-        <Input name="customCode" type="text" placeholder="커스텀 주소 (예: mentor)" className="w-full sm:w-48 border-blue-200 focus-visible:ring-blue-500" />
-        <Input name="pixelId" type="text" placeholder="FB 픽셀 ID" className="w-full sm:w-32" />
+        <Input name="pixelId" type="text" placeholder="FB 픽셀 ID (선택)" className="w-full sm:w-40" />
         <Button type="submit" disabled={loading} className="whitespace-nowrap">
           {loading ? "생성 중..." : "단축 생성"}
         </Button>

@@ -18,19 +18,13 @@ export async function createShortLink(formData: FormData): Promise<{ error?: str
 
   const longUrl = formData.get('longUrl') as string
   const pixelId = formData.get('pixelId') as string 
-  const customCode = formData.get('customCode') as string
 
   if (!longUrl) {
     return { error: 'URL을 입력해주세요.' }
   }
 
-  // 커스텀 코드가 있으면 공백을 제거하고 사용, 없으면 무작위 코드 생성
-  let shortCode = customCode ? customCode.trim() : generateShortCode()
-
-  // 커스텀 코드 정규식 검사 (영문, 숫자, 하이픈, 언더바만 허용)
-  if (customCode && !/^[a-zA-Z0-9-_]+$/.test(shortCode)) {
-    return { error: '커스텀 주소는 영문, 숫자, 하이픈(-), 언더바(_)만 사용할 수 있습니다.' }
-  }
+  // 무조건 무작위 코드로 생성 (커스텀은 추후 수정 기능으로)
+  let shortCode = generateShortCode()
 
   // DB 저장
   const { error } = await supabase

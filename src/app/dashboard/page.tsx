@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { createClient } from "@/utils/supabase/server"
 import { CopyButton } from "@/components/CopyButton"
 import { LinkCreateForm } from "@/components/LinkCreateForm"
+import { ProEditButton } from "@/components/ProEditButton"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -28,7 +29,7 @@ export default async function DashboardPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-xl border shadow-sm">
         <div>
           <h1 className="text-2xl font-bold">새 링크 단축하기</h1>
-          <p className="text-slate-500 text-sm mt-1 mb-4">긴 URL을 입력하고 픽셀과 원하는 주소를 설정하세요.</p>
+          <p className="text-slate-500 text-sm mt-1 mb-4">긴 URL을 입력하고 픽셀 아이디를 설정하세요.</p>
           <LinkCreateForm />
         </div>
       </div>
@@ -93,7 +94,10 @@ export default async function DashboardPage() {
                         {new Date(link.created_at).toLocaleDateString()}
                       </div>
                     </div>
-                    <CopyButton shortCode={link.short_code} />
+                    <div className="flex items-center gap-2">
+                      <CopyButton shortCode={link.short_code} />
+                      <ProEditButton />
+                    </div>
                   </div>
                 </div>
               ))
