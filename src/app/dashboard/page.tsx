@@ -1,9 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/utils/supabase/server"
-import { CopyButton } from "@/components/CopyButton"
 import { LinkCreateForm } from "@/components/LinkCreateForm"
-import { ProEditButton } from "@/components/ProEditButton"
+import { LinkItem } from "@/components/LinkItem"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -73,33 +72,7 @@ export default async function DashboardPage() {
           <div className="space-y-4">
             {links && links.length > 0 ? (
               links.map((link) => (
-                <div key={link.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-semibold text-blue-600">1mm.kr/{link.short_code}</span>
-                    <span className="text-xs text-slate-500 truncate max-w-xs">{link.long_url}</span>
-                    {link.pixel_id && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 w-max mt-1">
-                        픽셀 활성화됨
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right hidden sm:block">
-                      {/* Supabase 조인 쿼리 결과에서 count 추출 */}
-                      <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                        {/* @ts-ignore */}
-                        {link.clicks?.[0]?.count || 0} 클릭
-                      </div>
-                      <div className="text-xs text-slate-400">
-                        {new Date(link.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CopyButton shortCode={link.short_code} />
-                      <ProEditButton linkId={link.id} currentCode={link.short_code} />
-                    </div>
-                  </div>
-                </div>
+                <LinkItem key={link.id} link={link} />
               ))
             ) : (
               <div className="text-center py-8 text-slate-500">
