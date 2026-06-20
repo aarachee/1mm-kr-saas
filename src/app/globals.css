@@ -127,29 +127,29 @@
   html {
     @apply font-sans;
   }
+}
 
-  /* Theme A: Trust Blue (Default) */
-  [data-theme="trust"] {
-    --primary: oklch(0.546 0.245 262.881);
-  }
-  [data-theme="trust"].dark, .dark[data-theme="trust"] {
-    --primary: oklch(0.60 0.245 262.881);
-  }
+/* Theme A: Trust Blue (Default) */
+:root[data-theme="trust"] {
+  --primary: oklch(0.546 0.245 262.881);
+}
+.dark[data-theme="trust"] {
+  --primary: oklch(0.60 0.245 262.881);
+}
 
-  /* Theme B: Modern Black */
-  [data-theme="modern"] {
-    --primary: oklch(0.145 0 0); /* Pitch Black */
-  }
-  [data-theme="modern"].dark, .dark[data-theme="modern"] {
-    --primary: oklch(0.985 0 0); /* Pure White */
-    --primary-foreground: oklch(0.145 0 0);
-  }
+/* Theme B: Modern Black */
+:root[data-theme="modern"] {
+  --primary: oklch(0.145 0 0); /* Pitch Black */
+}
+.dark[data-theme="modern"] {
+  --primary: oklch(0.985 0 0); /* Pure White */
+  --primary-foreground: oklch(0.145 0 0);
+}
 
-  /* Theme C: Creative Purple */
-  [data-theme="creative"] {
-    --primary: oklch(0.488 0.243 264.376); /* Rich Purple */
-  }
-  [data-theme="creative"].dark, .dark[data-theme="creative"] {
-    --primary: oklch(0.6 0.243 264.376);
-  }
+/* Theme C: Creative Purple */
+:root[data-theme="creative"] {
+  --primary: oklch(0.488 0.243 264.376); /* Rich Purple */
+}
+.dark[data-theme="creative"] {
+  --primary: oklch(0.6 0.243 264.376);
 }
