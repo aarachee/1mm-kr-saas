@@ -77,3 +77,23 @@ export async function updateShortCode(linkId: number, newCode: string): Promise<
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function deleteShortLink(linkId: number): Promise<{ error?: string, success?: boolean }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: '로그인이 필요합니다.' }
+
+  const { error } = await supabase
+    .from('links')
+    .delete()
+    .eq('id', linkId)
+    .eq('user_id', user.id) // 보안: 내 링크만 삭제 가능
+
+  if (error) {
+    console.error("Delete error:", error)
+    return { error: '삭제에 실패했습니다.' }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}

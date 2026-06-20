@@ -25,10 +25,17 @@ const XIcon = () => (
   </svg>
 )
 
+const TrashIcon = () => (
+  <svg className="w-4 h-4 text-slate-400 hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+  </svg>
+)
+
 export function LinkItem({ link }: { link: any }) {
   const [isEditing, setIsEditing] = useState(false)
   const [newCode, setNewCode] = useState(link.short_code)
   const [loading, setLoading] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleSave = async () => {
@@ -52,6 +59,25 @@ export function LinkItem({ link }: { link: any }) {
       setError("오류가 발생했습니다.")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!window.confirm("정말로 이 단축 링크를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.")) {
+      return
+    }
+
+    setIsDeleting(true)
+    try {
+      const { deleteShortLink } = await import("@/app/actions")
+      const result = await deleteShortLink(link.id)
+      if (result.error) {
+        alert(result.error)
+        setIsDeleting(false)
+      }
+    } catch (err) {
+      alert("삭제 중 오류가 발생했습니다.")
+      setIsDeleting(false)
     }
   }
 
@@ -116,7 +142,19 @@ export function LinkItem({ link }: { link: any }) {
             {new Date(link.created_at).toLocaleDateString()}
           </div>
         </div>
-        {!isEditing && <CopyButton shortCode={link.short_code} />}
+        {!isEditing && (
+          <div className="flex items-center gap-1">
+            <CopyButton shortCode={link.short_code} />
+            <button 
+              onClick={handleDelete} 
+              disabled={isDeleting}
+              className="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors"
+              title="삭제"
+            >
+              <TrashIcon />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
