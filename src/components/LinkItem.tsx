@@ -69,10 +69,10 @@ export function LinkItem({ link }: { link: any }) {
               <Input 
                 value={newCode} 
                 onChange={(e) => setNewCode(e.target.value)} 
-                className="h-8 w-40 border-amber-300 focus-visible:ring-amber-500"
+                className="h-8 w-40 border-blue-200 focus-visible:ring-blue-500"
                 autoFocus
               />
-              <Button size="sm" onClick={handleSave} disabled={loading} className="h-8 bg-amber-600 hover:bg-amber-700">
+              <Button size="sm" onClick={handleSave} disabled={loading} className="h-8 bg-blue-600 hover:bg-blue-700 text-white">
                 {loading ? "저장중..." : <CheckIcon />} 
                 완료
               </Button>
@@ -90,7 +90,7 @@ export function LinkItem({ link }: { link: any }) {
               variant="ghost" 
               size="sm" 
               onClick={() => setIsEditing(true)} 
-              className="h-6 px-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+              className="h-6 px-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
             >
               <PencilIcon />
               <span className="text-[10px] font-bold">PRO 커스텀</span>
