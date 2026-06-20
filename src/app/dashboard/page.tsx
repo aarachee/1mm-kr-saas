@@ -1,9 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { createClient } from "@/utils/supabase/server"
-import { createShortLink } from "../actions"
 import { CopyButton } from "@/components/CopyButton"
+import { LinkCreateForm } from "@/components/LinkCreateForm"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -29,13 +28,9 @@ export default async function DashboardPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-xl border shadow-sm">
         <div>
           <h1 className="text-2xl font-bold">새 링크 단축하기</h1>
-          <p className="text-slate-500 text-sm mt-1">긴 URL을 입력하고 픽셀과 옵션을 설정하세요.</p>
+          <p className="text-slate-500 text-sm mt-1 mb-4">긴 URL을 입력하고 픽셀과 원하는 주소를 설정하세요.</p>
+          <LinkCreateForm />
         </div>
-        <form action={createShortLink} className="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
-          <Input name="longUrl" type="url" required placeholder="단축할 원본 주소 (https://...)" className="w-full sm:w-64" />
-          <Input name="pixelId" type="text" placeholder="FB 픽셀 ID (선택)" className="w-full sm:w-40" />
-          <Button type="submit">단축 생성</Button>
-        </form>
       </div>
 
       {/* Stats Cards */}
