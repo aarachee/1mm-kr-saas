@@ -34,8 +34,8 @@ export default async function DashboardLayout({
           <Link href="/dashboard" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-md font-medium transition-colors">
             통계 및 분석
           </Link>
-          <Link href="/dashboard" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-md font-medium transition-colors">
-            설정
+          <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-md font-medium transition-colors">
+            환경 설정
           </Link>
         </nav>
       </aside>
