@@ -36,6 +36,7 @@ export function LinkItem({ link }: { link: any }) {
   const [newCode, setNewCode] = useState(link.short_code)
   const [loading, setLoading] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleSave = async () => {
@@ -62,11 +63,7 @@ export function LinkItem({ link }: { link: any }) {
     }
   }
 
-  const handleDelete = async () => {
-    if (!window.confirm("정말로 이 단축 링크를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.")) {
-      return
-    }
-
+  const handleDeleteConfirm = async () => {
     setIsDeleting(true)
     try {
       const { deleteShortLink } = await import("@/app/actions")
@@ -74,10 +71,12 @@ export function LinkItem({ link }: { link: any }) {
       if (result.error) {
         alert(result.error)
         setIsDeleting(false)
+        setIsConfirmingDelete(false)
       }
     } catch (err) {
       alert("삭제 중 오류가 발생했습니다.")
       setIsDeleting(false)
+      setIsConfirmingDelete(false)
     }
   }
 
@@ -134,25 +133,51 @@ export function LinkItem({ link }: { link: any }) {
       </div>
 
       <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
-        <div className="text-left sm:text-right hidden sm:block">
-          <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
-            {clickCount} 클릭
+        {!isConfirmingDelete && (
+          <div className="text-left sm:text-right hidden sm:block">
+            <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
+              {clickCount} 클릭
+            </div>
+            <div className="text-xs text-slate-400">
+              {new Date(link.created_at).toLocaleDateString()}
+            </div>
           </div>
-          <div className="text-xs text-slate-400">
-            {new Date(link.created_at).toLocaleDateString()}
-          </div>
-        </div>
-        {!isEditing && (
+        )}
+        
+        {!isEditing && !isConfirmingDelete && (
           <div className="flex items-center gap-1">
             <CopyButton shortCode={link.short_code} />
             <button 
-              onClick={handleDelete} 
-              disabled={isDeleting}
-              className="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 transition-colors"
+              onClick={() => setIsConfirmingDelete(true)} 
+              className="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
               title="삭제"
             >
               <TrashIcon />
             </button>
+          </div>
+        )}
+
+        {isConfirmingDelete && (
+          <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg border border-red-100 dark:border-red-900/30 animate-in slide-in-from-right-4 duration-300">
+            <span className="text-xs font-semibold text-red-600 dark:text-red-400 mr-1">삭제할까요?</span>
+            <Button 
+              size="sm" 
+              variant="destructive" 
+              className="h-7 text-xs px-3"
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "삭제중..." : "삭제"}
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="h-7 text-xs px-2 text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+              onClick={() => setIsConfirmingDelete(false)}
+              disabled={isDeleting}
+            >
+              취소
+            </Button>
           </div>
         )}
       </div>
