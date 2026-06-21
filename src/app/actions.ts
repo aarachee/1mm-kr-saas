@@ -169,7 +169,7 @@ export async function generateDummyClicks(linkId: number, count: number = 50): P
 
     clicks.push({
       link_id: linkId,
-      created_at: randomDate.toISOString(),
+      clicked_at: randomDate.toISOString(),
       user_agent: userAgents[Math.floor(Math.random() * userAgents.length)],
       referer: referers[Math.floor(Math.random() * referers.length)],
       variant: variant,
