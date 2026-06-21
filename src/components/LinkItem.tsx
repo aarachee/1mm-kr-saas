@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CopyButton } from "@/components/CopyButton"
-import { updateShortCode } from "@/app/actions"
+import { updateShortCode, deleteShortLink, updateLinkData, generateDummyClicks } from "@/app/actions"
 
 // 루시드 아이콘 (shadcn 기본 내장)
 const PencilIcon = () => (
@@ -80,7 +80,6 @@ export function LinkItem({ link }: { link: any }) {
     setTargetError(null)
     
     try {
-      const { updateLinkData } = await import("@/app/actions")
       const formData = new FormData()
       formData.append('longUrl', newLongUrl)
       if (newLongUrlB) formData.append('longUrlB', newLongUrlB)
@@ -102,7 +101,6 @@ export function LinkItem({ link }: { link: any }) {
   const handleDeleteConfirm = async () => {
     setIsDeleting(true)
     try {
-      const { deleteShortLink } = await import("@/app/actions")
       const result = await deleteShortLink(link.id)
       if (result.error) {
         alert(result.error)
@@ -119,10 +117,13 @@ export function LinkItem({ link }: { link: any }) {
   const handleSeed = async () => {
     setLoading(true)
     try {
-      const { generateDummyClicks } = await import("@/app/actions")
-      await generateDummyClicks(link.id, 50)
+      const result = await generateDummyClicks(link.id, 50)
+      if (result?.error) {
+        alert("더미 데이터 생성 실패: " + result.error)
+      }
     } catch (err) {
       console.error(err)
+      alert("네트워크 또는 서버 오류가 발생했습니다.")
     } finally {
       setLoading(false)
     }

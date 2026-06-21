@@ -181,7 +181,7 @@ export async function generateDummyClicks(linkId: number, count: number = 50): P
 
   if (error) {
     console.error(error)
-    return { error: '더미 데이터 생성에 실패했습니다.' }
+    return { error: `더미 데이터 생성에 실패했습니다: ${error.message}` }
   }
 
   revalidatePath('/dashboard')
