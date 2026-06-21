@@ -131,3 +131,59 @@ export async function updateLinkData(linkId: number, formData: FormData): Promis
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function generateDummyClicks(linkId: number, count: number = 50): Promise<{ error?: string, success?: boolean }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: '로그인이 필요합니다.' }
+
+  // 내 링크인지 확인
+  const { data: link } = await supabase.from('links').select('id').eq('id', linkId).eq('user_id', user.id).single()
+  if (!link) return { error: '권한이 없습니다.' }
+
+  const clicks = []
+  const now = new Date()
+
+  // 가상의 브라우저 및 기기 데이터셋
+  const userAgents = [
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1', // iOS
+    'Mozilla/5.0 (Linux; Android 13; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36', // Android
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36', // Windows
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36', // Mac
+  ]
+  const referers = [
+    'https://www.google.com/',
+    'https://m.naver.com/',
+    'https://www.instagram.com/',
+    'https://www.daangn.com/',
+    null
+  ]
+
+  for (let i = 0; i < count; i++) {
+    // 최근 7일 내의 랜덤 시간
+    const randomDaysAgo = Math.random() * 7
+    const randomDate = new Date(now.getTime() - randomDaysAgo * 24 * 60 * 60 * 1000)
+    
+    // A/B 테스트 성과 차이를 주기 위해 A: 55%, B: 45% 로 설정 (대략적으로)
+    const variant = Math.random() > 0.45 ? 'A' : 'B'
+
+    clicks.push({
+      link_id: linkId,
+      created_at: randomDate.toISOString(),
+      user_agent: userAgents[Math.floor(Math.random() * userAgents.length)],
+      referer: referers[Math.floor(Math.random() * referers.length)],
+      variant: variant,
+      ip_address: `192.168.1.${Math.floor(Math.random() * 255)}`
+    })
+  }
+
+  const { error } = await supabase.from('clicks').insert(clicks)
+
+  if (error) {
+    console.error(error)
+    return { error: '더미 데이터 생성에 실패했습니다.' }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}

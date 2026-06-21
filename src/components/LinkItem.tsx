@@ -116,6 +116,18 @@ export function LinkItem({ link }: { link: any }) {
     }
   }
 
+  const handleSeed = async () => {
+    setLoading(true)
+    try {
+      const { generateDummyClicks } = await import("@/app/actions")
+      await generateDummyClicks(link.id, 50)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const clickCount = link.clicks?.[0]?.count || 0
 
   return (
@@ -230,9 +242,17 @@ export function LinkItem({ link }: { link: any }) {
             <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
               {clickCount} 클릭
             </div>
-            <div className="text-xs text-slate-400">
+            <div className="text-xs text-slate-400 mb-0.5">
               {new Date(link.created_at).toLocaleDateString()}
             </div>
+            <button 
+              onClick={handleSeed} 
+              disabled={loading} 
+              className="text-[10px] text-primary/60 hover:text-primary transition-colors underline decoration-dotted"
+              title="최근 7일간의 가상 클릭(A/B 및 기기 정보 포함) 50개를 무작위 생성합니다."
+            >
+              {loading ? "생성 중..." : "+ 가상클릭 50개 생성"}
+            </button>
           </div>
         )}
         
