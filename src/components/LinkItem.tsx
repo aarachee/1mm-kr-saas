@@ -53,6 +53,7 @@ export function LinkItem({ link }: { link: any }) {
   
   const [abStats, setAbStats] = useState<{ A: number, B: number } | null>(null)
   const [loadingStats, setLoadingStats] = useState(false)
+  const [selectedWinner, setSelectedWinner] = useState<'A' | 'B' | null>(null)
 
   const handleSave = async () => {
     if (newCode === link.short_code) {
@@ -84,8 +85,19 @@ export function LinkItem({ link }: { link: any }) {
     
     try {
       const formData = new FormData()
-      formData.append('longUrl', newLongUrl)
-      if (newLongUrlB) formData.append('longUrlB', newLongUrlB)
+      
+      let finalA = newLongUrl
+      let finalB = newLongUrlB
+      
+      if (selectedWinner === 'A') {
+        finalB = ""
+      } else if (selectedWinner === 'B') {
+        finalA = newLongUrlB
+        finalB = ""
+      }
+
+      formData.append('longUrl', finalA)
+      if (finalB) formData.append('longUrlB', finalB)
       if (link.pixel_id) formData.append('pixelId', link.pixel_id)
 
       const result = await updateLinkData(link.id, formData)
@@ -93,6 +105,7 @@ export function LinkItem({ link }: { link: any }) {
         setTargetError(result.error)
       } else {
         setIsEditingTarget(false)
+        setSelectedWinner(null)
       }
     } catch (err) {
       setTargetError("오류가 발생했습니다.")
@@ -179,7 +192,7 @@ export function LinkItem({ link }: { link: any }) {
           <div className="flex flex-col gap-3 mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 w-full max-w-lg">
             
             {/* 1. 성과 맨 위 */}
-            {newLongUrlB && (
+            {link.long_url_b && (
               <div className="pb-3 border-b border-slate-200 dark:border-slate-800">
                 <p className="text-[10px] font-bold text-slate-500 mb-2">🎯 A/B 테스트 성과 (클릭 수 기준)</p>
                 {loadingStats ? (
@@ -202,36 +215,46 @@ export function LinkItem({ link }: { link: any }) {
             {/* 2. 각 주소창 뒤에 선택 버튼 */}
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-slate-500">원본 주소 A (필수)</label>
+                <label className="text-[10px] font-bold text-slate-500">도착지 A</label>
                 <div className="flex gap-2">
-                  <Input value={newLongUrl} onChange={e => setNewLongUrl(e.target.value)} className="h-8 text-xs flex-1" />
-                  {newLongUrlB && (
+                  <Input 
+                    value={newLongUrl} 
+                    onChange={e => setNewLongUrl(e.target.value)} 
+                    className={`h-8 text-xs flex-1 ${selectedWinner === 'B' ? 'opacity-50 bg-slate-50 text-slate-400' : ''}`} 
+                    disabled={selectedWinner === 'B'}
+                  />
+                  {link.long_url_b && (
                     <Button 
                       type="button" 
                       size="sm" 
-                      variant="outline" 
-                      onClick={() => setNewLongUrlB("")} 
-                      className="text-[11px] h-8 px-3 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                      variant={selectedWinner === 'A' ? "default" : "outline"} 
+                      onClick={() => setSelectedWinner(selectedWinner === 'A' ? null : 'A')} 
+                      className={`text-[11px] h-8 px-3 transition-all ${selectedWinner === 'B' ? 'opacity-40 bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-100 hover:text-slate-400' : selectedWinner === 'A' ? 'bg-blue-600 hover:bg-blue-700' : 'hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400'}`}
                     >
-                      A 승리
+                      {selectedWinner === 'A' ? '선택됨' : '선택'}
                     </Button>
                   )}
                 </div>
               </div>
               
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-slate-500">도착지 B (A/B 테스트용)</label>
+                <label className="text-[10px] font-bold text-slate-500">도착지 B</label>
                 <div className="flex gap-2">
-                  <Input value={newLongUrlB} onChange={e => setNewLongUrlB(e.target.value)} placeholder="비워두면 테스트가 중지됩니다." className="h-8 text-xs flex-1 border-primary/30" />
-                  {newLongUrlB && (
+                  <Input 
+                    value={newLongUrlB} 
+                    onChange={e => setNewLongUrlB(e.target.value)} 
+                    className={`h-8 text-xs flex-1 border-primary/30 ${selectedWinner === 'A' ? 'opacity-50 bg-slate-50 text-slate-400 border-slate-200' : ''}`} 
+                    disabled={selectedWinner === 'A'}
+                  />
+                  {link.long_url_b && (
                     <Button 
                       type="button" 
                       size="sm" 
-                      variant="outline" 
-                      onClick={() => { setNewLongUrl(newLongUrlB); setNewLongUrlB(""); }} 
-                      className="text-[11px] h-8 px-3 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/30 dark:hover:text-green-400"
+                      variant={selectedWinner === 'B' ? "default" : "outline"} 
+                      onClick={() => setSelectedWinner(selectedWinner === 'B' ? null : 'B')} 
+                      className={`text-[11px] h-8 px-3 transition-all ${selectedWinner === 'A' ? 'opacity-40 bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-100 hover:text-slate-400' : selectedWinner === 'B' ? 'bg-green-600 hover:bg-green-700' : 'hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/30 dark:hover:text-green-400'}`}
                     >
-                      B 승리
+                      {selectedWinner === 'B' ? '선택됨' : '선택'}
                     </Button>
                   )}
                 </div>
@@ -242,7 +265,7 @@ export function LinkItem({ link }: { link: any }) {
 
             {/* 3. 취소 / 저장 버튼 */}
             <div className="flex justify-end gap-2 pt-1">
-              <Button size="sm" variant="ghost" onClick={() => { setIsEditingTarget(false); setNewLongUrl(link.long_url); setNewLongUrlB(link.long_url_b || ""); }} className="h-7 text-xs" disabled={targetLoading}>취소</Button>
+              <Button size="sm" variant="ghost" onClick={() => { setIsEditingTarget(false); setSelectedWinner(null); setNewLongUrl(link.long_url); setNewLongUrlB(link.long_url_b || ""); }} className="h-7 text-xs" disabled={targetLoading}>취소</Button>
               <Button size="sm" onClick={handleSaveTarget} className="h-7 text-xs bg-primary" disabled={targetLoading}>{targetLoading ? "저장중..." : "저장"}</Button>
             </div>
           </div>
