@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server"
 import { LinkCreateForm } from "@/components/LinkCreateForm"
 import { LinkItem } from "@/components/LinkItem"
 import { ClicksChart } from "@/components/ClicksChart"
+import { StatsPieChart } from "@/components/StatsPieChart"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -41,13 +42,30 @@ export default async function DashboardPage() {
     return acc
   }, {} as Record<string, number>)
 
+  const deviceCounts: Record<string, number> = {
+    'iOS (iPhone/iPad)': 0,
+    'Android': 0,
+    'Windows': 0,
+    'Mac OS': 0,
+    '기타': 0
+  }
+
+  const referrerCounts: Record<string, number> = {
+    '직접 접속': 0,
+    '네이버': 0,
+    '구글': 0,
+    '인스타그램': 0,
+    '당근마켓': 0,
+    '기타 사이트': 0
+  }
+
   if (linkIds.length > 0) {
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
     const { data: recentClicks } = await supabase
       .from('clicks')
-      .select('clicked_at')
+      .select('clicked_at, user_agent, referrer')
       .in('link_id', linkIds)
       .gte('clicked_at', sevenDaysAgo.toISOString())
 
@@ -61,8 +79,33 @@ export default async function DashboardPage() {
       if (clicksByDate[dateStr] !== undefined) {
         clicksByDate[dateStr]++
       }
+
+      const ua = click.user_agent || ''
+      if (ua.includes('iPhone') || ua.includes('iPad')) deviceCounts['iOS (iPhone/iPad)']++
+      else if (ua.includes('Android')) deviceCounts['Android']++
+      else if (ua.includes('Windows')) deviceCounts['Windows']++
+      else if (ua.includes('Macintosh') || ua.includes('Mac OS')) deviceCounts['Mac OS']++
+      else deviceCounts['기타']++
+
+      const ref = click.referrer || ''
+      if (!ref || ref === 'direct') referrerCounts['직접 접속']++
+      else if (ref.includes('naver.com')) referrerCounts['네이버']++
+      else if (ref.includes('google.com')) referrerCounts['구글']++
+      else if (ref.includes('instagram.com')) referrerCounts['인스타그램']++
+      else if (ref.includes('daangn.com')) referrerCounts['당근마켓']++
+      else referrerCounts['기타 사이트']++
     })
   }
+
+  const deviceData = Object.entries(deviceCounts)
+    .filter(([_, count]) => count > 0)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
+
+  const referrerData = Object.entries(referrerCounts)
+    .filter(([_, count]) => count > 0)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
 
   const chartData = last7Days.map(date => ({
     date: date.substring(5).replace('-', '/'), // MM/DD
@@ -113,6 +156,28 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Deep Analytics Pie Charts */}
+      {totalClicks > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader className="pb-0">
+              <CardTitle className="text-sm font-medium text-slate-500">기기 및 운영체제 비율</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <StatsPieChart data={deviceData} colors={['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-0">
+              <CardTitle className="text-sm font-medium text-slate-500">유입 경로 (Referrer)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <StatsPieChart data={referrerData} colors={['#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#64748b']} />
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Recent Links */}
       <Card>
