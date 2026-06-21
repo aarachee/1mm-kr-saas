@@ -187,3 +187,27 @@ export async function generateDummyClicks(linkId: number, count: number = 50): P
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function getABTestStats(linkId: number): Promise<{ A: number, B: number, error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { A: 0, B: 0, error: '로그인이 필요합니다.' }
+
+  const { data, error } = await supabase
+    .from('clicks')
+    .select('variant')
+    .eq('link_id', linkId)
+
+  if (error || !data) {
+    return { A: 0, B: 0, error: '통계를 불러오지 못했습니다.' }
+  }
+
+  let countA = 0
+  let countB = 0
+  data.forEach(c => {
+    if (c.variant === 'A') countA++
+    else if (c.variant === 'B') countB++
+  })
+
+  return { A: countA, B: countB }
+}

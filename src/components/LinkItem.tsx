@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CopyButton } from "@/components/CopyButton"
-import { updateShortCode, deleteShortLink, updateLinkData, generateDummyClicks } from "@/app/actions"
+import { updateShortCode, deleteShortLink, updateLinkData, generateDummyClicks, getABTestStats } from "@/app/actions"
 
 // 루시드 아이콘 (shadcn 기본 내장)
 const PencilIcon = () => (
@@ -50,6 +50,9 @@ export function LinkItem({ link }: { link: any }) {
   const [newLongUrlB, setNewLongUrlB] = useState(link.long_url_b || "")
   const [targetError, setTargetError] = useState<string | null>(null)
   const [targetLoading, setTargetLoading] = useState(false)
+  
+  const [abStats, setAbStats] = useState<{ A: number, B: number } | null>(null)
+  const [loadingStats, setLoadingStats] = useState(false)
 
   const handleSave = async () => {
     if (newCode === link.short_code) {
@@ -185,7 +188,25 @@ export function LinkItem({ link }: { link: any }) {
             
             {newLongUrlB && (
               <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-                <p className="text-[10px] font-bold text-slate-500 mb-2">🎯 테스트 종료 및 승자 선택 (클릭 시 자동 적용)</p>
+                <div className="flex justify-between items-end mb-2">
+                  <p className="text-[10px] font-bold text-slate-500">🎯 A/B 테스트 성과 (클릭 수 기준)</p>
+                </div>
+
+                {loadingStats ? (
+                  <div className="text-xs text-slate-400 mb-3 animate-pulse">통계 불러오는 중...</div>
+                ) : abStats ? (
+                  <div className="mb-3">
+                    <div className="flex justify-between text-[11px] font-bold mb-1 px-0.5">
+                      <span className="text-blue-600 dark:text-blue-400">A: {abStats.A}회 ({Math.round(abStats.A / ((abStats.A + abStats.B) || 1) * 100)}%)</span>
+                      <span className="text-green-600 dark:text-green-400">B: {abStats.B}회 ({Math.round(abStats.B / ((abStats.A + abStats.B) || 1) * 100)}%)</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden flex">
+                      <div className="h-full bg-blue-500 transition-all duration-1000" style={{ width: `${Math.round(abStats.A / ((abStats.A + abStats.B) || 1) * 100)}%` }}></div>
+                      <div className="h-full bg-green-500 transition-all duration-1000" style={{ width: `${Math.round(abStats.B / ((abStats.A + abStats.B) || 1) * 100)}%` }}></div>
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="flex gap-2">
                   <Button 
                     type="button" 
@@ -194,7 +215,7 @@ export function LinkItem({ link }: { link: any }) {
                     onClick={() => setNewLongUrlB("")} 
                     className="text-xs flex-1 h-8 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
                   >
-                    A 사이트로 결정
+                    A 승리 (A로 고정)
                   </Button>
                   <Button 
                     type="button" 
@@ -203,7 +224,7 @@ export function LinkItem({ link }: { link: any }) {
                     onClick={() => { setNewLongUrl(newLongUrlB); setNewLongUrlB(""); }} 
                     className="text-xs flex-1 h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/30 dark:hover:text-green-400"
                   >
-                    B 사이트로 결정
+                    B 승리 (B로 교체)
                   </Button>
                 </div>
               </div>
@@ -261,9 +282,24 @@ export function LinkItem({ link }: { link: any }) {
           <div className="flex items-center gap-1">
             <CopyButton shortCode={link.short_code} />
             <button 
-              onClick={() => setIsEditingTarget(true)} 
+              onClick={async () => {
+                setIsEditingTarget(true);
+                if (link.long_url_b) {
+                  setLoadingStats(true);
+                  try {
+                    const stats = await getABTestStats(link.id);
+                    if (!stats.error) {
+                      setAbStats({ A: stats.A, B: stats.B });
+                    }
+                  } catch (err) {
+                    console.error(err);
+                  } finally {
+                    setLoadingStats(false);
+                  }
+                }
+              }} 
               className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title="도착지 수정 / A/B 테스트 중지"
+              title="도착지 수정 / A/B 테스트 성과 확인 및 중지"
             >
               <EditIcon />
             </button>
