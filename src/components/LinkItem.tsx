@@ -165,12 +165,39 @@ export function LinkItem({ link }: { link: any }) {
               <label className="text-[10px] font-bold text-slate-500">원본 주소 A (필수)</label>
               <Input value={newLongUrl} onChange={e => setNewLongUrl(e.target.value)} className="h-8 text-xs" />
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold text-slate-500">도착지 B (A/B 테스트용, 비우면 중지됨)</label>
+            <div className="flex flex-col gap-1 mt-1">
+              <label className="text-[10px] font-bold text-slate-500">도착지 B (A/B 테스트용)</label>
               <Input value={newLongUrlB} onChange={e => setNewLongUrlB(e.target.value)} placeholder="비워두면 A/B 테스트가 중지됩니다." className="h-8 text-xs border-primary/30" />
             </div>
-            {targetError && <span className="text-xs text-red-500 font-medium">{targetError}</span>}
-            <div className="flex justify-end gap-2 mt-1">
+            
+            {newLongUrlB && (
+              <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                <p className="text-[10px] font-bold text-slate-500 mb-2">🎯 테스트 종료 및 승자 선택 (클릭 시 자동 적용)</p>
+                <div className="flex gap-2">
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => setNewLongUrlB("")} 
+                    className="text-xs flex-1 h-8 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                  >
+                    A 사이트로 결정
+                  </Button>
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => { setNewLongUrl(newLongUrlB); setNewLongUrlB(""); }} 
+                    className="text-xs flex-1 h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/30 dark:hover:text-green-400"
+                  >
+                    B 사이트로 결정
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {targetError && <span className="text-xs text-red-500 font-medium mt-1">{targetError}</span>}
+            <div className="flex justify-end gap-2 mt-2">
               <Button size="sm" variant="ghost" onClick={() => { setIsEditingTarget(false); setNewLongUrl(link.long_url); setNewLongUrlB(link.long_url_b || ""); }} className="h-7 text-xs" disabled={targetLoading}>취소</Button>
               <Button size="sm" onClick={handleSaveTarget} className="h-7 text-xs bg-primary" disabled={targetLoading}>{targetLoading ? "저장중..." : "저장"}</Button>
             </div>
