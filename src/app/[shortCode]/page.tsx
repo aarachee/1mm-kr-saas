@@ -9,12 +9,13 @@ export default async function RedirectPage({
   params: Promise<{ shortCode: string }>
 }) {
   const { shortCode } = await params
+  const decodedShortCode = decodeURIComponent(shortCode)
 
   // 1. DB에서 shortCode 검색
   const { data: link, error } = await supabase
     .from('links')
     .select('id, long_url, is_active, pixel_id')
-    .eq('short_code', shortCode)
+    .eq('short_code', decodedShortCode)
     .single()
 
   if (error || !link || !link.is_active) {
