@@ -31,6 +31,12 @@ const TrashIcon = () => (
   </svg>
 )
 
+const EditIcon = () => (
+  <svg className="w-4 h-4 text-slate-400 hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+  </svg>
+)
+
 export function LinkItem({ link }: { link: any }) {
   const [isEditing, setIsEditing] = useState(false)
   const [newCode, setNewCode] = useState(link.short_code)
@@ -38,6 +44,12 @@ export function LinkItem({ link }: { link: any }) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const [isEditingTarget, setIsEditingTarget] = useState(false)
+  const [newLongUrl, setNewLongUrl] = useState(link.long_url)
+  const [newLongUrlB, setNewLongUrlB] = useState(link.long_url_b || "")
+  const [targetError, setTargetError] = useState<string | null>(null)
+  const [targetLoading, setTargetLoading] = useState(false)
 
   const handleSave = async () => {
     if (newCode === link.short_code) {
@@ -60,6 +72,30 @@ export function LinkItem({ link }: { link: any }) {
       setError("오류가 발생했습니다.")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSaveTarget = async () => {
+    setTargetLoading(true)
+    setTargetError(null)
+    
+    try {
+      const { updateLinkData } = await import("@/app/actions")
+      const formData = new FormData()
+      formData.append('longUrl', newLongUrl)
+      if (newLongUrlB) formData.append('longUrlB', newLongUrlB)
+      if (link.pixel_id) formData.append('pixelId', link.pixel_id)
+
+      const result = await updateLinkData(link.id, formData)
+      if (result.error) {
+        setTargetError(result.error)
+      } else {
+        setIsEditingTarget(false)
+      }
+    } catch (err) {
+      setTargetError("오류가 발생했습니다.")
+    } finally {
+      setTargetLoading(false)
     }
   }
 
@@ -123,15 +159,35 @@ export function LinkItem({ link }: { link: any }) {
           </div>
         )}
 
-        <span className="text-xs text-slate-500 truncate max-w-xs sm:max-w-md">{link.long_url}</span>
-        
-        {link.long_url_b && (
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
-              A/B 테스트 중
-            </span>
-            <span className="text-xs text-slate-400 truncate max-w-xs sm:max-w-xs">B: {link.long_url_b}</span>
+        {isEditingTarget ? (
+          <div className="flex flex-col gap-2 mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 w-full max-w-lg">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-slate-500">원본 주소 A (필수)</label>
+              <Input value={newLongUrl} onChange={e => setNewLongUrl(e.target.value)} className="h-8 text-xs" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-slate-500">도착지 B (A/B 테스트용, 비우면 중지됨)</label>
+              <Input value={newLongUrlB} onChange={e => setNewLongUrlB(e.target.value)} placeholder="비워두면 A/B 테스트가 중지됩니다." className="h-8 text-xs border-primary/30" />
+            </div>
+            {targetError && <span className="text-xs text-red-500 font-medium">{targetError}</span>}
+            <div className="flex justify-end gap-2 mt-1">
+              <Button size="sm" variant="ghost" onClick={() => { setIsEditingTarget(false); setNewLongUrl(link.long_url); setNewLongUrlB(link.long_url_b || ""); }} className="h-7 text-xs" disabled={targetLoading}>취소</Button>
+              <Button size="sm" onClick={handleSaveTarget} className="h-7 text-xs bg-primary" disabled={targetLoading}>{targetLoading ? "저장중..." : "저장"}</Button>
+            </div>
           </div>
+        ) : (
+          <>
+            <span className="text-xs text-slate-500 truncate max-w-xs sm:max-w-md mt-1">{link.long_url}</span>
+            
+            {link.long_url_b && (
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                  A/B 테스트 중
+                </span>
+                <span className="text-xs text-slate-400 truncate max-w-xs sm:max-w-xs">B: {link.long_url_b}</span>
+              </div>
+            )}
+          </>
         )}
         
         {link.pixel_id && (
@@ -153,9 +209,16 @@ export function LinkItem({ link }: { link: any }) {
           </div>
         )}
         
-        {!isEditing && !isConfirmingDelete && (
+        {!isEditing && !isEditingTarget && !isConfirmingDelete && (
           <div className="flex items-center gap-1">
             <CopyButton shortCode={link.short_code} />
+            <button 
+              onClick={() => setIsEditingTarget(true)} 
+              className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="도착지 수정 / A/B 테스트 중지"
+            >
+              <EditIcon />
+            </button>
             <button 
               onClick={() => setIsConfirmingDelete(true)} 
               className="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"

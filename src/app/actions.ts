@@ -99,3 +99,35 @@ export async function deleteShortLink(linkId: number): Promise<{ error?: string,
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function updateLinkData(linkId: number, formData: FormData): Promise<{ error?: string, success?: boolean }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: '로그인이 필요합니다.' }
+
+  const longUrl = formData.get('longUrl') as string
+  const longUrlB = formData.get('longUrlB') as string
+  const pixelId = formData.get('pixelId') as string 
+
+  if (!longUrl) {
+    return { error: '원본 URL은 필수입니다.' }
+  }
+
+  const { error } = await supabase
+    .from('links')
+    .update({ 
+      long_url: longUrl, 
+      long_url_b: longUrlB || null,
+      pixel_id: pixelId || null 
+    })
+    .eq('id', linkId)
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error(error)
+    return { error: '링크 수정에 실패했습니다.' }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}
