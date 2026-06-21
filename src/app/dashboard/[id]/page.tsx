@@ -6,7 +6,10 @@ import { StatsBarChart } from "@/components/StatsBarChart"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
-export default async function LinkStatsPage({ params, searchParams }: { params: { id: string }, searchParams: { days?: string } }) {
+export default async function LinkStatsPage(props: { params: Promise<{ id: string }>, searchParams: Promise<{ days?: string }> }) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+
   const linkId = parseInt(params.id)
   if (isNaN(linkId)) return <div className="p-10">잘못된 링크 ID입니다.</div>
 
