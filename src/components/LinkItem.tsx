@@ -176,26 +176,16 @@ export function LinkItem({ link }: { link: any }) {
         )}
 
         {isEditingTarget ? (
-          <div className="flex flex-col gap-2 mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 w-full max-w-lg">
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold text-slate-500">원본 주소 A (필수)</label>
-              <Input value={newLongUrl} onChange={e => setNewLongUrl(e.target.value)} className="h-8 text-xs" />
-            </div>
-            <div className="flex flex-col gap-1 mt-1">
-              <label className="text-[10px] font-bold text-slate-500">도착지 B (A/B 테스트용)</label>
-              <Input value={newLongUrlB} onChange={e => setNewLongUrlB(e.target.value)} placeholder="비워두면 A/B 테스트가 중지됩니다." className="h-8 text-xs border-primary/30" />
-            </div>
+          <div className="flex flex-col gap-3 mt-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 w-full max-w-lg">
             
+            {/* 1. 성과 맨 위 */}
             {newLongUrlB && (
-              <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-                <div className="flex justify-between items-end mb-2">
-                  <p className="text-[10px] font-bold text-slate-500">🎯 A/B 테스트 성과 (클릭 수 기준)</p>
-                </div>
-
+              <div className="pb-3 border-b border-slate-200 dark:border-slate-800">
+                <p className="text-[10px] font-bold text-slate-500 mb-2">🎯 A/B 테스트 성과 (클릭 수 기준)</p>
                 {loadingStats ? (
-                  <div className="text-xs text-slate-400 mb-3 animate-pulse">통계 불러오는 중...</div>
+                  <div className="text-xs text-slate-400 animate-pulse">통계 불러오는 중...</div>
                 ) : abStats ? (
-                  <div className="mb-3">
+                  <div>
                     <div className="flex justify-between text-[11px] font-bold mb-1 px-0.5">
                       <span className="text-blue-600 dark:text-blue-400">A: {abStats.A}회 ({Math.round(abStats.A / ((abStats.A + abStats.B) || 1) * 100)}%)</span>
                       <span className="text-green-600 dark:text-green-400">B: {abStats.B}회 ({Math.round(abStats.B / ((abStats.A + abStats.B) || 1) * 100)}%)</span>
@@ -206,32 +196,52 @@ export function LinkItem({ link }: { link: any }) {
                     </div>
                   </div>
                 ) : null}
-
-                <div className="flex gap-2">
-                  <Button 
-                    type="button" 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => setNewLongUrlB("")} 
-                    className="text-xs flex-1 h-8 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
-                  >
-                    A 승리 (A로 고정)
-                  </Button>
-                  <Button 
-                    type="button" 
-                    size="sm" 
-                    variant="outline" 
-                    onClick={() => { setNewLongUrl(newLongUrlB); setNewLongUrlB(""); }} 
-                    className="text-xs flex-1 h-8 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/30 dark:hover:text-green-400"
-                  >
-                    B 승리 (B로 교체)
-                  </Button>
-                </div>
               </div>
             )}
 
-            {targetError && <span className="text-xs text-red-500 font-medium mt-1">{targetError}</span>}
-            <div className="flex justify-end gap-2 mt-2">
+            {/* 2. 각 주소창 뒤에 선택 버튼 */}
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500">원본 주소 A (필수)</label>
+                <div className="flex gap-2">
+                  <Input value={newLongUrl} onChange={e => setNewLongUrl(e.target.value)} className="h-8 text-xs flex-1" />
+                  {newLongUrlB && (
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => setNewLongUrlB("")} 
+                      className="text-[11px] h-8 px-3 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                    >
+                      A 승리
+                    </Button>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-500">도착지 B (A/B 테스트용)</label>
+                <div className="flex gap-2">
+                  <Input value={newLongUrlB} onChange={e => setNewLongUrlB(e.target.value)} placeholder="비워두면 테스트가 중지됩니다." className="h-8 text-xs flex-1 border-primary/30" />
+                  {newLongUrlB && (
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => { setNewLongUrl(newLongUrlB); setNewLongUrlB(""); }} 
+                      className="text-[11px] h-8 px-3 hover:bg-green-50 hover:text-green-600 hover:border-green-200 dark:hover:bg-green-900/30 dark:hover:text-green-400"
+                    >
+                      B 승리
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {targetError && <span className="text-xs text-red-500 font-medium">{targetError}</span>}
+
+            {/* 3. 취소 / 저장 버튼 */}
+            <div className="flex justify-end gap-2 pt-1">
               <Button size="sm" variant="ghost" onClick={() => { setIsEditingTarget(false); setNewLongUrl(link.long_url); setNewLongUrlB(link.long_url_b || ""); }} className="h-7 text-xs" disabled={targetLoading}>취소</Button>
               <Button size="sm" onClick={handleSaveTarget} className="h-7 text-xs bg-primary" disabled={targetLoading}>{targetLoading ? "저장중..." : "저장"}</Button>
             </div>
