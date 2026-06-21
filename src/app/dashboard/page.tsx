@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server"
 import { LinkCreateForm } from "@/components/LinkCreateForm"
 import { LinkItem } from "@/components/LinkItem"
 import { ClicksChart } from "@/components/ClicksChart"
-import { StatsPieChart } from "@/components/StatsPieChart"
+import { StatsBarChart } from "@/components/StatsBarChart"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Deep Analytics Pie Charts */}
+      {/* Deep Analytics Bar Charts */}
       {totalClicks > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
@@ -165,7 +165,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-sm font-medium text-slate-500">기기 및 운영체제 비율</CardTitle>
             </CardHeader>
             <CardContent>
-              <StatsPieChart data={deviceData} colors={['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']} />
+              <StatsBarChart data={deviceData} />
             </CardContent>
           </Card>
           <Card>
@@ -173,7 +173,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-sm font-medium text-slate-500">유입 경로 (Referrer)</CardTitle>
             </CardHeader>
             <CardContent>
-              <StatsPieChart data={referrerData} colors={['#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#64748b']} />
+              <StatsBarChart data={referrerData} />
             </CardContent>
           </Card>
         </div>
