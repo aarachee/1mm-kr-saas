@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 
 export default async function LinkStatsPage({ params, searchParams }: { params: { id: string }, searchParams: { days?: string } }) {
   const linkId = parseInt(params.id)
-  if (isNaN(linkId)) redirect('/dashboard')
+  if (isNaN(linkId)) return <div className="p-10">잘못된 링크 ID입니다.</div>
 
   const days = parseInt(searchParams.days || '7')
   const validDays = isNaN(days) ? 7 : days
@@ -18,14 +18,21 @@ export default async function LinkStatsPage({ params, searchParams }: { params: 
   if (!user) redirect('/login')
 
   // 링크 소유권 확인
-  const { data: link } = await supabase
+  const { data: link, error: linkError } = await supabase
     .from('links')
     .select('*')
     .eq('id', linkId)
     .eq('user_id', user.id)
     .single()
 
-  if (!link) redirect('/dashboard')
+  if (linkError || !link) {
+    return (
+      <div className="p-10">
+        <h1 className="text-xl font-bold text-red-500 mb-4">링크 정보를 불러오지 못했습니다.</h1>
+        <pre className="bg-slate-100 p-4 rounded text-xs">{JSON.stringify({ linkId, error: linkError, userId: user.id }, null, 2)}</pre>
+      </div>
+    )
+  }
 
   // 날짜 범위 계산
   const startDate = new Date()
