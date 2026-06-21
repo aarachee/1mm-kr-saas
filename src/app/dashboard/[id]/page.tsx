@@ -10,8 +10,8 @@ export default async function LinkStatsPage(props: { params: Promise<{ id: strin
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  const linkId = parseInt(params.id)
-  if (isNaN(linkId)) return <div className="p-10">잘못된 링크 ID입니다.</div>
+  const linkId = params.id
+  if (!linkId) return <div className="p-10">잘못된 링크 ID입니다.</div>
 
   const days = parseInt(searchParams.days || '7')
   const validDays = isNaN(days) ? 7 : days
