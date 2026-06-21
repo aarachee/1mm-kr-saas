@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation"
+import { SidebarNav } from "@/components/SidebarNav"
 
 export default async function DashboardLayout({
   children,
@@ -24,20 +25,7 @@ export default async function DashboardLayout({
             <span className="text-primary">1mm</span>.kr
           </Link>
         </div>
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          <Link href="/dashboard" className="flex items-center px-4 py-3 bg-primary/10 text-primary rounded-md font-medium">
-            대시보드 홈
-          </Link>
-          <Link href="/dashboard" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-md font-medium transition-colors">
-            링크 관리
-          </Link>
-          <Link href="/dashboard" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-md font-medium transition-colors">
-            통계 및 분석
-          </Link>
-          <Link href="/dashboard/settings" className="flex items-center px-4 py-3 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-md font-medium transition-colors">
-            환경 설정
-          </Link>
-        </nav>
+        <SidebarNav />
       </aside>
 
       {/* Main Content */}
