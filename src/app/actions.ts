@@ -17,6 +17,7 @@ export async function createShortLink(formData: FormData): Promise<{ error?: str
   }
 
   const longUrl = formData.get('longUrl') as string
+  const longUrlB = formData.get('longUrlB') as string
   const pixelId = formData.get('pixelId') as string 
 
   if (!longUrl) {
@@ -33,6 +34,7 @@ export async function createShortLink(formData: FormData): Promise<{ error?: str
       { 
         user_id: user.id, 
         long_url: longUrl, 
+        long_url_b: longUrlB || null,
         short_code: shortCode, 
         pixel_id: pixelId || null 
       }

@@ -125,6 +125,15 @@ export function LinkItem({ link }: { link: any }) {
 
         <span className="text-xs text-slate-500 truncate max-w-xs sm:max-w-md">{link.long_url}</span>
         
+        {link.long_url_b && (
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+              A/B 테스트 중
+            </span>
+            <span className="text-xs text-slate-400 truncate max-w-xs sm:max-w-xs">B: {link.long_url_b}</span>
+          </div>
+        )}
+        
         {link.pixel_id && (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 w-max mt-1">
             픽셀 활성화됨

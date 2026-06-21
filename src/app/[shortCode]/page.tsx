@@ -14,12 +14,23 @@ export default async function RedirectPage({
   // 1. DB에서 shortCode 검색
   const { data: link, error } = await supabase
     .from('links')
-    .select('id, long_url, is_active, pixel_id')
+    .select('id, long_url, long_url_b, is_active, pixel_id')
     .eq('short_code', decodedShortCode)
     .single()
 
   if (error || !link || !link.is_active) {
     redirect('/')
+  }
+
+  // A/B 테스트 트래픽 분산 엔진 (50:50)
+  let targetUrl = link.long_url
+  let chosenVariant = 'A'
+
+  if (link.long_url_b) {
+    if (Math.random() > 0.5) {
+      targetUrl = link.long_url_b
+      chosenVariant = 'B'
+    }
   }
 
   // 2. 통계(Click) 데이터 수집
@@ -32,19 +43,20 @@ export default async function RedirectPage({
     link_id: link.id,
     ip_address: ip,
     user_agent: userAgent,
-    referrer: referrer
+    referrer: referrer,
+    variant: chosenVariant
   }]).then()
 
   // 3. 픽셀 ID가 없으면 즉시 서버 리다이렉트 (가장 빠름)
   if (!link.pixel_id) {
-    redirect(link.long_url)
+    redirect(targetUrl)
   }
 
   // 4. 픽셀 ID가 있으면 중간 HTML 페이지를 렌더링하여 픽셀을 실행한 뒤 리다이렉트
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Fallback meta refresh (스크립트가 안 먹히는 환경 대비) */}
-      <meta httpEquiv="refresh" content={`1.5;url=${link.long_url}`} />
+      <meta httpEquiv="refresh" content={`1.5;url=${targetUrl}`} />
       
       <div className="text-center animate-in fade-in duration-500">
         <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -67,7 +79,7 @@ export default async function RedirectPage({
           fbq('track', 'PageView');
           
           // 픽셀 실행 시간을 확보한 뒤(약 0.6초) 스크립트로 리다이렉트
-          setTimeout(function() { window.location.href = "${link.long_url}"; }, 600);
+          setTimeout(function() { window.location.href = "${targetUrl}"; }, 600);
         `}
       </Script>
     </div>
