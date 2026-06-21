@@ -57,8 +57,8 @@ export async function updateShortCode(linkId: number, newCode: string): Promise<
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: '로그인이 필요합니다.' }
 
-  if (!newCode || !/^[a-zA-Z0-9-_]+$/.test(newCode)) {
-    return { error: '영문, 숫자, 하이픈(-), 언더바(_)만 사용할 수 있습니다.' }
+  if (!newCode || !/^[a-zA-Z0-9-_가-힣]+$/.test(newCode)) {
+    return { error: '한글, 영문, 숫자, 하이픈(-), 언더바(_)만 사용할 수 있습니다.' }
   }
 
   const { error } = await supabase
