@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { CopyButton } from "@/components/CopyButton"
+import Link from 'next/link'
 import { updateShortCode, deleteShortLink, updateLinkData, generateDummyClicks, getABTestStats } from "@/app/actions"
 
 // 루시드 아이콘 (shadcn 기본 내장)
@@ -23,6 +24,10 @@ const XIcon = () => (
   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
   </svg>
+)
+
+const StatsIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
 )
 
 const TrashIcon = () => (
@@ -323,6 +328,13 @@ export function LinkItem({ link }: { link: any }) {
         {!isEditing && !isEditingTarget && !isConfirmingDelete && (
           <div className="flex items-center gap-1">
             <CopyButton shortCode={link.short_code} />
+            <Link 
+              href={`/dashboard/${link.id}`}
+              className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="상세 통계 보기"
+            >
+              <StatsIcon />
+            </Link>
             <button 
               onClick={async () => {
                 setIsEditingTarget(true);
