@@ -54,7 +54,7 @@ export function StatsBarChart({ data }: StatsBarChartProps) {
             <LabelList 
               dataKey="value" 
               position="right" 
-              formatter={(val: number) => `${val}회`} 
+              formatter={(val: any) => `${val}회`} 
               style={{ fill: 'hsl(var(--foreground))', fontSize: '11px', fontWeight: 'bold' }} 
             />
           </Bar>
