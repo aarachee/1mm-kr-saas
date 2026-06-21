@@ -171,7 +171,7 @@ export async function generateDummyClicks(linkId: number, count: number = 50): P
       link_id: linkId,
       clicked_at: randomDate.toISOString(),
       user_agent: userAgents[Math.floor(Math.random() * userAgents.length)],
-      referer: referers[Math.floor(Math.random() * referers.length)],
+      referrer: referers[Math.floor(Math.random() * referers.length)],
       variant: variant,
       ip_address: `192.168.1.${Math.floor(Math.random() * 255)}`
     })
