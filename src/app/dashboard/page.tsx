@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { createClient } from "@/utils/supabase/server"
 import { LinkCreateForm } from "@/components/LinkCreateForm"
 import { LinkItem } from "@/components/LinkItem"
+import { ClicksChart } from "@/components/ClicksChart"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -22,6 +23,52 @@ export default async function DashboardPage() {
     return sum + (link.clicks?.[0]?.count || 0)
   }, 0) || 0
 
+  // 3. 차트 데이터 생성 (최근 7일)
+  const linkIds = links?.map(l => l.id) || []
+  
+  // 지난 7일간의 날짜 배열 생성 (YYYY-MM-DD)
+  const last7Days = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (6 - i))
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  })
+
+  const clicksByDate = last7Days.reduce((acc, date) => {
+    acc[date] = 0
+    return acc
+  }, {} as Record<string, number>)
+
+  if (linkIds.length > 0) {
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    const { data: recentClicks } = await supabase
+      .from('clicks')
+      .select('clicked_at')
+      .in('link_id', linkIds)
+      .gte('clicked_at', sevenDaysAgo.toISOString())
+
+    recentClicks?.forEach(click => {
+      const clickDate = new Date(click.clicked_at)
+      const year = clickDate.getFullYear()
+      const month = String(clickDate.getMonth() + 1).padStart(2, '0')
+      const day = String(clickDate.getDate()).padStart(2, '0')
+      const dateStr = `${year}-${month}-${day}`
+      
+      if (clicksByDate[dateStr] !== undefined) {
+        clicksByDate[dateStr]++
+      }
+    })
+  }
+
+  const chartData = last7Days.map(date => ({
+    date: date.substring(5).replace('-', '/'), // MM/DD
+    clicks: clicksByDate[date]
+  }))
+
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Top Action */}
@@ -33,32 +80,36 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">내 링크 총 클릭 수</CardTitle>
+      {/* Stats & Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Stats Cards */}
+        <div className="lg:col-span-1 flex flex-col gap-6">
+          <Card className="flex-1 border-primary/20 bg-primary/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-primary">내 링크 총 클릭 수</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-primary">{totalClicks}</div>
+              <p className="text-xs text-slate-500 mt-2">내가 만든 모든 링크의 클릭 합계</p>
+            </CardContent>
+          </Card>
+          <Card className="flex-1">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-slate-500">생성된 내 링크</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{links?.length || 0}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Chart */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-0">
+            <CardTitle className="text-sm font-medium text-slate-500">최근 7일 트래픽 추이</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">{totalClicks}</div>
-            <p className="text-xs text-slate-500 mt-1">내가 만든 모든 링크의 클릭 합계</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">생성된 내 링크</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{links?.length || 0}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-slate-500">전환된 픽셀 데이터</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">0</div>
-            <p className="text-xs text-slate-500 mt-1">Facebook & Google 타겟팅용 (준비중)</p>
+            <ClicksChart data={chartData} />
           </CardContent>
         </Card>
       </div>
