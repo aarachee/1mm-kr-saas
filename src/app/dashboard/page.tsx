@@ -9,20 +9,14 @@ export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: links } = await supabase
-    .from('links')
-    .select('*, clicks(count)')
-    .eq('user_id', user?.id)
-    .order('created_at', { ascending: false })
-    .limit(3) // 최근 3개만 표시
-
-  // 총 클릭 수 (전체 링크를 가져오지 않으므로 한계가 있지만, 요약용으로 최근 3개만 일단 표시하거나 별도 쿼리 필요. 
-  // Wait, 요약을 위해 전체 링크 수를 가져와야 하므로 별도 쿼리 필요함.
-  
-  const { data: allLinks } = await supabase
-    .from('links')
-    .select('id, clicks(count)')
-    .eq('user_id', user?.id)
+  // 병렬(Parallel) 호출로 핑 지연시간 단축
+  const [
+    { data: links },
+    { data: allLinks }
+  ] = await Promise.all([
+    supabase.from('links').select('*, clicks(count)').eq('user_id', user?.id).order('created_at', { ascending: false }).limit(3),
+    supabase.from('links').select('id, clicks(count)').eq('user_id', user?.id)
+  ])
 
   const totalClicks = allLinks?.reduce((sum, link) => {
     // @ts-ignore
