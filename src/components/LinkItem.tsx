@@ -308,10 +308,15 @@ export function LinkItem({ link }: { link: any }) {
       <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
         {!isConfirmingDelete && (
           <div className="text-left sm:text-right hidden sm:block">
-            <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
-              {clickCount} 클릭
+            <div className="flex items-center sm:justify-end gap-2">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                {clickCount} 클릭
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/50 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/40">
+                ❤️ {link.likes_count || 0} 응원
+              </span>
             </div>
-            <div className="text-xs text-slate-400 mb-0.5">
+            <div className="text-xs text-slate-400 mb-0.5 mt-0.5">
               {new Date(link.created_at).toLocaleDateString()}
             </div>
             <button 

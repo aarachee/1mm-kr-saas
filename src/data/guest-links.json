@@ -1,0 +1,194 @@
+[
+  {
+    "id": "guest-1791951790721-76k1",
+    "short_code": "deal99",
+    "long_url": "https://shopping.naver.com/v2/products/1049283921",
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-14T04:23:10.721Z",
+    "clicks_count": 0
+  },
+  {
+    "id": "guest-1791951723073-8u11",
+    "short_code": "zvkxqb",
+    "long_url": "https://naver.com",
+    "long_url_b": null,
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-14T04:22:03.073Z",
+    "clicks_count": 0
+  },
+  {
+    "id": "guest-1791951084914-xgh8",
+    "short_code": "vkv2a2",
+    "long_url": "https://news.naver.com",
+    "long_url_b": null,
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-14T04:11:24.915Z",
+    "clicks_count": 0
+  },
+  {
+    "id": "guest-1791950971668-r8rl",
+    "short_code": "tech-news",
+    "long_url": "https://news.naver.com/main/read.naver?mode=LSD&mid=shm&sid1=105&oid=030&aid=0003012345",
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-14T04:09:31.668Z",
+    "clicks_count": 0
+  },
+  {
+    "id": "guest-1791950826921-omjq",
+    "short_code": "super-deal",
+    "long_url": "https://shopping.naver.com/v2/products/1049283921",
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-14T04:07:06.921Z",
+    "clicks_count": 0
+  },
+  {
+    "id": "sample-honey-board",
+    "short_code": "honey",
+    "long_url": "https://coupang.com",
+    "is_active": true,
+    "is_product_board": true,
+    "creator_name": "살림왕 꿀템 모음소 🍯",
+    "creator_desc": "인스타/유튜브 영상 속 번호(No.)를 검색하시면 최저가 링크로 바로 연결됩니다!",
+    "products": [
+      {
+        "id": "p-24",
+        "itemNumber": 24,
+        "title": "기름 안 튀는 3단 실리콘 프라이팬 덮개 (식기세척기 가능)",
+        "url": "https://www.coupang.com",
+        "imageUrl": "https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=400&q=80",
+        "price": "12,900원",
+        "badge": "영상 속 꿀템",
+        "platform": "coupang"
+      },
+      {
+        "id": "p-23",
+        "itemNumber": 23,
+        "title": "틈새 먼지 싹쓸이 극세사 롱 먼지털이개 2단 연장형",
+        "url": "https://smartstore.naver.com",
+        "imageUrl": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=400&q=80",
+        "price": "8,500원",
+        "badge": "로켓배송",
+        "platform": "naver"
+      },
+      {
+        "id": "p-22",
+        "itemNumber": 22,
+        "title": "냉장고 도어 포켓 360도 회전식 양념통 정리대",
+        "url": "https://www.coupang.com",
+        "imageUrl": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=400&q=80",
+        "price": "15,400원",
+        "badge": "품절임박",
+        "platform": "coupang"
+      },
+      {
+        "id": "p-7",
+        "itemNumber": 7,
+        "title": "물때 안 끼는 자동 건조 초슬림 칫솔 살균 거치대",
+        "url": "https://www.coupang.com",
+        "imageUrl": "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=400&q=80",
+        "price": "19,800원",
+        "badge": "누적판매 1위",
+        "platform": "coupang"
+      }
+    ],
+    "created_at": "2026-10-13T23:50:00.000Z",
+    "clicks_count": 57
+  },
+  {
+    "id": "guest-1791863555232-0lg0",
+    "short_code": "5wjbxr",
+    "long_url": "https://play.google.com/store/apps/details?id=kr.trendhunter.mentornote",
+    "long_url_b": null,
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-13T03:52:35.232Z",
+    "clicks_count": 1
+  },
+  {
+    "id": "guest-1791862781286-lean",
+    "short_code": "kfikuk",
+    "long_url": "https://play.google.com/store/apps/details?id=kr.trendhunter.mentornote",
+    "long_url_b": null,
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-13T03:39:41.286Z",
+    "clicks_count": 0
+  },
+  {
+    "id": "guest-1791862209132-f4y0",
+    "short_code": "m",
+    "long_url": "https://daangn.com",
+    "is_multilink": true,
+    "store_name": "멘토의수첩",
+    "store_desc": "구글플레이 멘토의수첩",
+    "store_category": "로컬 비즈니스",
+    "buttons": [],
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-13T03:30:09.132Z",
+    "clicks_count": 2
+  },
+  {
+    "id": "guest-1791862754408-ebkc",
+    "short_code": "dasa",
+    "long_url": "https://daangn.com",
+    "is_multilink": true,
+    "store_name": "다사역 원조칼국수",
+    "store_desc": "매일 아침 끓이는 진한 닭칼국수와 매운 김치",
+    "store_category": "로컬 비즈니스",
+    "buttons": [
+      {
+        "platform": "daangn",
+        "label": "당근마켓 단골 맺기",
+        "url": "https://daangn.com",
+        "badge": "단골 10% 쿠폰"
+      },
+      {
+        "platform": "naver",
+        "label": "네이버 플레이스 실시간 예약",
+        "url": "https://map.naver.com",
+        "badge": "실시간 예약 (음료 증정)"
+      },
+      {
+        "platform": "baemin",
+        "label": "배달의민족 바로주문",
+        "url": "https://baemin.com",
+        "badge": "포장 2,000원 할인"
+      },
+      {
+        "platform": "call",
+        "label": "매장 전화걸기 & 찾아오시는 길",
+        "url": "tel:053-123-4567",
+        "badge": "전화 문의"
+      }
+    ],
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-13T03:39:14.408Z",
+    "clicks_count": 39,
+    "likes_count": 42
+  },
+  {
+    "id": "guest-1791860808970-ztjz",
+    "short_code": "carapp",
+    "long_url": "https://play.google.com/store/apps/details?id=kr.trendhunter.mentornote",
+    "long_url_b": null,
+    "pixel_id": null,
+    "user_id": null,
+    "is_active": true,
+    "created_at": "2026-10-13T03:06:48.970Z",
+    "clicks_count": 1
+  }
+]

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/utils/supabase/server"
 import { LinkCreateForm } from "@/components/LinkCreateForm"
 import { LinkItem } from "@/components/LinkItem"
+import { GuestLinkClaimBanner } from "@/components/GuestLinkClaimBanner"
 
 export default async function LinksManagementPage() {
   const supabase = await createClient()
@@ -15,6 +16,9 @@ export default async function LinksManagementPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* 비회원 생성 링크 귀속 배너 */}
+      <GuestLinkClaimBanner />
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-xl border shadow-sm">
         <div className="w-full">
           <h1 className="text-2xl font-bold">새 링크 단축하기</h1>

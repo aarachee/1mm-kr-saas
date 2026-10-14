@@ -1,98 +1,374 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
+'use client'
 
-export default function Home() {
+import React from 'react'
+import Link from 'next/link'
+import { 
+  Link2, QrCode as QrIcon, ShieldCheck, Zap, ArrowRight, Check, 
+  ExternalLink, TrendingUp, Sparkles, Lock, Layers, BarChart3,
+  Smartphone, Share2, Compass
+} from 'lucide-react'
+import { InstantEscapeWidget } from '@/components/InstantEscapeWidget'
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:bg-slate-950/80">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2 text-xl font-bold tracking-tight">
-            <span className="text-primary">1mm</span>.kr
-          </div>
-          <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-            <Link href="#features" className="hover:text-primary transition-colors">기능</Link>
-            <Link href="#pricing" className="hover:text-primary transition-colors">요금제</Link>
-            <Link href="#contact" className="hover:text-primary transition-colors">도입 문의</Link>
+    <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white">
+      
+      {/* 1. 글로벌 네비게이션 헤더 */}
+      <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-md">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 max-w-6xl">
+          
+          {/* 브랜드 로고 */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+              1mm
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-black text-lg tracking-tight text-white">1mm.kr</span>
+              <span className="text-[10px] bg-indigo-500/10 text-indigo-300 font-semibold px-2 py-0.5 rounded-full border border-indigo-500/20 hidden sm:inline-block">
+                모바일 전환 인프라
+              </span>
+            </div>
+          </Link>
+
+          {/* 데스크톱 네비게이션 */}
+          <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-300">
+            <a href="#escape-shortener" className="hover:text-indigo-400 transition-colors">
+              인앱 탈출 단축 & QR
+            </a>
+            <a href="#features" className="hover:text-indigo-400 transition-colors">
+              주요 기능
+            </a>
+            <a href="#pricing" className="hover:text-indigo-400 transition-colors">
+              요금제
+            </a>
+            {/* 1mm Pay 분리 서브서비스 바로가기 */}
+            <Link 
+              href="/pay" 
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-purple-500/15 to-pink-500/15 border border-purple-500/30 text-purple-300 hover:text-white transition-all hover:scale-105"
+            >
+              <Sparkles className="w-3 h-3 text-pink-400" />
+              <span>1mm Pay (크리에이터 결제)</span>
+              <ArrowRight className="w-2.5 h-2.5" />
+            </Link>
           </nav>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden sm:inline-flex">로그인</Button>
-            <Button>무료로 시작하기</Button>
+
+          {/* 우측 CTA */}
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/pay"
+              className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 transition-colors border border-slate-800"
+            >
+              <span>전자책 판매 ➔</span>
+            </Link>
+
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white transition-all shadow-md shadow-indigo-500/20 active:scale-95"
+            >
+              대시보드 시작
+            </Link>
           </div>
         </div>
       </header>
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="container mx-auto px-4 py-24 md:py-32 flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 leading-tight">
-            가장 완벽한 데이터 분석,<br className="hidden md:block"/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-600">
-              1mm.kr 단축 링크
+      {/* 2. 메인 히어로 섹션: 1mm 인앱 탈출 단축주소 & QR 스튜디오 */}
+      <section id="escape-shortener" className="relative overflow-hidden pt-12 sm:pt-16 pb-16 px-4 sm:px-6">
+        
+        {/* 은은한 배경 앰비언트 글로우 */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-indigo-600/10 blur-[130px] rounded-full pointer-events-none" />
+
+        <div className="container mx-auto max-w-4xl relative z-10 text-center">
+          
+          {/* 상단 뱃지 */}
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] font-semibold mb-5">
+            <Zap className="w-3.5 h-3.5 text-amber-400 fill-current" />
+            <span>국내 최단 13자 인앱 탈출 딥링크 & 300 DPI QR 스튜디오</span>
+          </div>
+
+          {/* 헤드라인 */}
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-white max-w-3xl mx-auto">
+            단 1mm의 마찰도 없는 <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-white to-indigo-300">
+              초단축 딥링크 & 모바일 전환 엔진
             </span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">
-            단순한 링크 단축을 넘어 A/B 테스트, 픽셀 삽입, 실시간 통계까지.<br/>
-            마케터와 크리에이터를 위한 단 하나의 플랫폼입니다.
-          </p>
-          
-          <div className="w-full max-w-xl flex flex-col sm:flex-row gap-3">
-            <Input 
-              type="url" 
-              placeholder="단축할 긴 URL을 입력하세요 (예: https://example.com/...)" 
-              className="h-12 text-base px-4 shadow-sm"
-            />
-            <Button className="h-12 px-8 text-base shadow-sm">단축하기</Button>
-          </div>
-          <p className="mt-4 text-sm text-slate-500">
-            회원가입 없이 무료로 1개의 링크를 테스트해 보세요.
-          </p>
-        </section>
 
-        {/* Features Preview */}
-        <section id="features" className="bg-white dark:bg-slate-900 py-20">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold mb-4">왜 1mm.kr 인가요?</h2>
-              <p className="text-slate-600 dark:text-slate-400">당신의 마케팅 성과를 1mm라도 더 끌어올리기 위한 기능들</p>
+          {/* 서브 카피 */}
+          <p className="mt-4 text-slate-400 text-xs sm:text-sm max-w-xl mx-auto font-normal leading-relaxed">
+            인스타·카톡 로그인 풀림을 깨부수는 <strong>13자 인앱 탈출 단축링크</strong>와 <br className="hidden sm:inline" />
+            인쇄물에 깨짐 없는 <strong>300 DPI 초고해상도 QR코드</strong>를 1초 만에 무료 생성하세요.
+          </p>
+
+          {/* 무료 미끼: 인앱 탈출 단축기 & QR 스튜디오 위젯 */}
+          <div className="mt-8">
+            <InstantEscapeWidget />
+          </div>
+
+          {/* 구글 애드센스 슬롯 */}
+          <div className="mt-8 max-w-2xl mx-auto bg-slate-900/40 border border-slate-800/80 rounded-2xl p-3 text-center relative overflow-hidden">
+            <div className="text-[10px] text-slate-500 font-bold mb-1 flex items-center justify-between px-1">
+              <span>SPONSORED</span>
+              <span className="text-slate-600 text-[9px]">Google AdSense (pub-7685551023610074)</span>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <Card className="border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl text-primary">정교한 A/B 테스트</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 dark:text-slate-400">하나의 단축 링크로 트래픽을 분산시켜 어떤 페이지가 더 전환율이 높은지 손쉽게 테스트하세요.</p>
-                </CardContent>
-              </Card>
-              <Card className="border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl text-indigo-600">리타겟팅 픽셀</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 dark:text-slate-400">단축 링크 클릭 시 찰나의 순간 페이스북/구글 픽셀을 실행하여 잠재 고객 모수를 확보합니다.</p>
-                </CardContent>
-              </Card>
-              <Card className="border-slate-200/60 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl text-purple-600">멀티 링크(Link-in-Bio)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 dark:text-slate-400">크리에이터를 위한 전용 페이지. 버튼별 데이터 분석이 가능한 나만의 프로필을 만드세요.</p>
-                </CardContent>
-              </Card>
+            <div className="min-h-[75px] w-full bg-slate-950/60 border border-slate-800/60 rounded-xl flex flex-col items-center justify-center p-3 text-center">
+              <span className="text-xs font-semibold text-indigo-400 mb-0.5">
+                클라우드 인프라 & 고성능 모바일 마케팅 솔루션
+              </span>
+              <p className="text-[11px] text-slate-400 max-w-md">
+                대량 알림톡 발송 및 초저지연 CDN 호스팅을 위한 최적화 플랫폼
+              </p>
             </div>
           </div>
-        </section>
-      </main>
-      
-      {/* Footer */}
-      <footer className="border-t py-12 bg-white dark:bg-slate-950">
-        <div className="container mx-auto px-4 text-center text-slate-500">
-          <p>© 2026 1mm.kr All rights reserved.</p>
+        </div>
+      </section>
+
+      {/* 3. 단축링크 & 인앱 탈출 3대 핵심 특장점 */}
+      <section id="features" className="py-16 px-4 sm:px-6 border-t border-slate-800/80 bg-slate-950/60 relative">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">Features</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
+              왜 마케터는 일반 단축링크 대신 1mm를 쓸까요?
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* 1. 인앱 탈출 */}
+            <div className="p-6 rounded-3xl bg-slate-900/50 border border-slate-800 space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white">인앱 브라우저 자동 탈출</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                인스타그램·카카오톡·스레드 앱 내 웹뷰에서 발생하는 로그인 풀림을 방지하고, 사파리(Safari)나 크롬(Chrome), 쿠팡 앱으로 즉시 연결합니다.
+              </p>
+            </div>
+
+            {/* 2. 300 DPI QR */}
+            <div className="p-6 rounded-3xl bg-slate-900/50 border border-slate-800 space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                <QrIcon className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white">300 DPI 인쇄용 고해상도 QR</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                전단지, 배너, 제품 패키지에 인쇄해도 전혀 번지거나 깨지지 않는 1200x1200px 초고해상도 벡터 QR코드를 즉시 생성하고 PNG로 저장하세요.
+              </p>
+            </div>
+
+            {/* 3. 픽셀 & A/B 테스트 */}
+            <div className="p-6 rounded-3xl bg-slate-900/50 border border-slate-800 space-y-4">
+              <div className="w-10 h-10 rounded-2xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-white">메타 픽셀 & A/B 테스트</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                단축링크를 누른 잠재고객을 메타(Facebook) 픽셀 모수로 수집하고, 도착지 URL을 50:50으로 무작위 분산하여 랜딩페이지 전환율을 테스트하세요.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. [신규 브릿지 배너] 1mm Pay 크리에이터 솔루션 연계 안내 */}
+      <section className="py-14 px-4 sm:px-6 border-t border-slate-800/80 bg-gradient-to-b from-slate-950 via-indigo-950/20 to-slate-950 relative">
+        <div className="container mx-auto max-w-5xl">
+          <div className="p-6 sm:p-10 rounded-3xl bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900/60 border border-indigo-500/30 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            
+            <div className="space-y-3 text-center md:text-left max-w-xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                <span>지식 창업자 & 인스타 크리에이터이신가요?</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                댓글 하나로 자는 동안 팔리는 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-pink-300">1mm Pay</span>
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                전자책·노션 템플릿 판매에 크몽 20% 수수료를 낼 필요가 없습니다. <br className="hidden sm:inline" />
+                인스타 댓글 자동 DM부터 카카오페이/토스 원클릭 결제창까지 단 1분 만에 세팅하세요.
+              </p>
+            </div>
+
+            <Link
+              href="/pay"
+              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-400 hover:to-pink-400 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-purple-500/20 transition-all shrink-0 active:scale-95"
+            >
+              <span>1mm Pay 솔루션 확인하기</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. 투명한 단축링크 SaaS 전용 요금제 */}
+      <section id="pricing" className="py-20 px-4 sm:px-6 border-t border-slate-800 relative">
+        <div className="container mx-auto max-w-5xl">
+          
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 text-xs font-semibold mb-3">
+              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Transparent Link Pricing</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              합리적인 단축링크 요금제
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-2">
+              무료 13자 인앱 탈출 단축주소부터 퍼포먼스 마케팅용 A/B 분산 엔진까지 지원합니다.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            
+            {/* PLAN 1: FREE */}
+            <div className="p-6 rounded-3xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-base font-bold text-white">Starter Free</h3>
+                  <p className="text-xs text-slate-400 mt-1">단축주소 및 QR 무료 생성용</p>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-white">0원</span>
+                  <span className="text-xs text-slate-500">/ 평생 무료</span>
+                </div>
+                <ul className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-slate-900">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>13자 인앱 탈출 단축링크 무제한</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>300 DPI 인쇄용 고해상도 QR코드</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>기본 실시간 클릭수 집계</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-slate-500">
+                    <span>메타 픽셀 및 A/B 테스트 미지원</span>
+                  </li>
+                </ul>
+              </div>
+
+              <a
+                href="#escape-shortener"
+                className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-bold text-xs flex items-center justify-center transition-colors"
+              >
+                무료로 시작하기
+              </a>
+            </div>
+
+            {/* PLAN 2: PRO MARKETER (BEST) */}
+            <div className="p-6 rounded-3xl bg-gradient-to-b from-indigo-950/40 via-slate-900 to-slate-950 border-2 border-indigo-500 flex flex-col justify-between space-y-6 relative shadow-xl shadow-indigo-500/10">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-black text-[10px] tracking-wider uppercase">
+                Most Popular
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-base font-bold text-white">Pro Marketer</h3>
+                  <p className="text-xs text-indigo-300 mt-1">퍼포먼스 마케팅 & 제휴 셀러</p>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-white">9,900원</span>
+                  <span className="text-xs text-slate-400">/ 월</span>
+                </div>
+                <ul className="space-y-2.5 text-xs text-slate-200 pt-2 border-t border-slate-800">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span><strong>메타(Meta) / 구글 / 틱톡 픽셀 무제한 연동</strong></span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span><strong>A/B 테스트 50:50 무작위 트래픽 분산</strong></span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>유입 채널(Referrer) 및 OS/기기별 상세 통계</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>한글 커스텀 슬러그 (예: 1mm.kr/멘토)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>중간 광고 배너 100% 제거</span>
+                  </li>
+                </ul>
+              </div>
+
+              <Link
+                href="/dashboard"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-indigo-500/25 transition-all active:scale-95"
+              >
+                <span>Pro Marketer 시작하기</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* PLAN 3: AGENCY / ENTERPRISE */}
+            <div className="p-6 rounded-3xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-base font-bold text-white">Agency / B2B</h3>
+                  <p className="text-xs text-slate-400 mt-1">대행사 및 다계정 마케팅팀</p>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-white">29,000원</span>
+                  <span className="text-xs text-slate-500">/ 월</span>
+                </div>
+                <ul className="space-y-2.5 text-xs text-slate-300 pt-2 border-t border-slate-900">
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Pro Marketer 모든 기능 포함</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>비밀번호 보호 링크 & 링크 만료일 설정</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>대량 링크 생성 API 키 발급</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>팀원 계정 초대 및 데이터 권한 관리</span>
+                  </li>
+                </ul>
+              </div>
+
+              <Link
+                href="/dashboard"
+                className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-bold text-xs flex items-center justify-center transition-colors"
+              >
+                도입 문의하기
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 6. 푸터 */}
+      <footer className="border-t border-slate-900 py-10 px-4 sm:px-6 bg-slate-950 text-xs text-slate-500">
+        <div className="container mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-slate-300">1mm.kr</span>
+            <span>•</span>
+            <span>초단축 딥링크 & 모바일 전환 최적화 인프라</span>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <Link href="/pay" className="hover:text-purple-400 transition-colors flex items-center gap-1 font-semibold">
+              <Sparkles className="w-3 h-3 text-pink-400" />
+              <span>1mm Pay (크리에이터 결제)</span>
+            </Link>
+            <a href="#escape-shortener" className="hover:text-slate-300 transition-colors">
+              단축주소 생성기
+            </a>
+            <Link href="/dashboard" className="hover:text-slate-300 transition-colors">
+              대시보드
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
