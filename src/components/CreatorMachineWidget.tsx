@@ -273,7 +273,7 @@ export function CreatorMachineWidget() {
 
             {/* 생성된 결제창 원클릭 체험 버튼 */}
             {createdResult && (
-              <div className="pt-2">
+              <div className="pt-2 space-y-2">
                 <Link
                   href={createdResult.checkoutUrl}
                   target="_blank"
@@ -281,6 +281,14 @@ export function CreatorMachineWidget() {
                 >
                   <span>내 결제 페이지 미리보기 ({createdResult.slug})</span>
                   <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+
+                <Link
+                  href="/dashboard/playbook"
+                  className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 hover:from-indigo-500/30 hover:to-pink-500/30 border border-indigo-500/30 text-indigo-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                  <span>인스타에 올릴 완판 템플릿 복사하기 ➔</span>
                 </Link>
               </div>
             )}
