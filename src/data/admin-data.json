@@ -1,0 +1,97 @@
+{
+  "settlements": [
+    {
+      "id": "stl_202610_01",
+      "creatorName": "김서준 (직장인 부업)",
+      "creatorEmail": "seojun.kim***@gmail.com",
+      "productTitle": "직장인 퇴근 후 1시간, 월 200 부업 치트키 실전서",
+      "period": "2026년 10월 2주차",
+      "grossAmount": 387400,
+      "feeRate": 0.035,
+      "feeAmount": 13559,
+      "netPayout": 373841,
+      "bankName": "카카오뱅크",
+      "accountNumber": "3333-01-9876543",
+      "accountHolder": "김서준",
+      "status": "PENDING",
+      "scheduledDate": "2026-10-19",
+      "completedAt": null
+    },
+    {
+      "id": "stl_202610_02",
+      "creatorName": "박세은 (릴스 크리에이티브)",
+      "creatorEmail": "seeun.reels***@kakao.com",
+      "productTitle": "인스타 릴스 100만 뷰 알고리즘 & 후킹 스크립트 50선",
+      "period": "2026년 10월 1주차",
+      "grossAmount": 612000,
+      "feeRate": 0.035,
+      "feeAmount": 21420,
+      "netPayout": 590580,
+      "bankName": "신한은행",
+      "accountNumber": "110-334-998877",
+      "accountHolder": "박세은",
+      "status": "COMPLETED",
+      "scheduledDate": "2026-10-12",
+      "completedAt": "2026-10-12T10:15:00Z"
+    },
+    {
+      "id": "stl_202610_03",
+      "creatorName": "이재훈 (노션 앰배서더)",
+      "creatorEmail": "notion.jh***@naver.com",
+      "productTitle": "올인원 노션 업무 대시보드 템플릿 패키지",
+      "period": "2026년 10월 1주차",
+      "grossAmount": 298000,
+      "feeRate": 0.035,
+      "feeAmount": 10430,
+      "netPayout": 287570,
+      "bankName": "토스뱅크",
+      "accountNumber": "1000-22-334455",
+      "accountHolder": "이재훈",
+      "status": "COMPLETED",
+      "scheduledDate": "2026-10-12",
+      "completedAt": "2026-10-12T10:18:00Z"
+    }
+  ],
+  "transactions": [
+    {
+      "orderId": "ORD-20261014-98421",
+      "productTitle": "직장인 퇴근 후 1시간, 월 200 부업 치트키 실전서",
+      "customerEmail": "minji.lee***@gmail.com",
+      "method": "kakaopay",
+      "amount": 14900,
+      "fee": 521,
+      "status": "SUCCESS",
+      "paidAt": "2026-10-14T20:12:00Z"
+    },
+    {
+      "orderId": "ORD-20261014-87332",
+      "productTitle": "인스타 릴스 100만 뷰 알고리즘 & 후킹 스크립트 50선",
+      "customerEmail": "shpark***@naver.com",
+      "method": "tosspay",
+      "amount": 19900,
+      "fee": 696,
+      "status": "SUCCESS",
+      "paidAt": "2026-10-14T20:15:00Z"
+    },
+    {
+      "orderId": "ORD-20261014-76219",
+      "productTitle": "직장인 퇴근 후 1시간, 월 200 부업 치트키 실전서",
+      "customerEmail": "young***@gmail.com",
+      "method": "naverpay",
+      "amount": 14900,
+      "fee": 521,
+      "status": "SUCCESS",
+      "paidAt": "2026-10-14T21:40:00Z"
+    },
+    {
+      "orderId": "ORD-20261014-65104",
+      "productTitle": "인스타 릴스 100만 뷰 알고리즘 & 후킹 스크립트 50선",
+      "customerEmail": "hyun.kang***@kakao.com",
+      "method": "card",
+      "amount": 19900,
+      "fee": 696,
+      "status": "SUCCESS",
+      "paidAt": "2026-10-14T22:05:00Z"
+    }
+  ]
+}

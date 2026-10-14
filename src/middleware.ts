@@ -15,12 +15,15 @@ export function middleware(request: NextRequest) {
     }
 
     // 2. pay.1mm.kr/[slug] 접근 시 /p/[slug] 체크아웃 페이지로 내부 리라이트
-    // (정적 에셋, API, /p/ 이미 포함된 경로 제외)
+    // (정적 에셋, API, /p/, /admin, /dashboard, /login 제외)
     if (
       !url.pathname.startsWith('/api') &&
       !url.pathname.startsWith('/_next') &&
       !url.pathname.startsWith('/pay') &&
       !url.pathname.startsWith('/p/') &&
+      !url.pathname.startsWith('/admin') &&
+      !url.pathname.startsWith('/dashboard') &&
+      !url.pathname.startsWith('/login') &&
       !url.pathname.includes('.')
     ) {
       url.pathname = `/p${url.pathname}`
