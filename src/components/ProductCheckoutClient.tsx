@@ -10,6 +10,8 @@ import {
 import { DigitalProductRecord } from '@/lib/digitalProducts'
 import { ReviewRecord, QnaRecord } from '@/lib/creatorFeedback'
 
+import { requestDigitalProductPayment, PaymentMethodType, PaymentResult } from '@/lib/payment/portone'
+
 interface ProductCheckoutClientProps {
   product: DigitalProductRecord | null
   initialReviews?: ReviewRecord[]
@@ -21,9 +23,10 @@ export function ProductCheckoutClient({
   initialReviews = [],
   initialQnas = [] 
 }: ProductCheckoutClientProps) {
-  const [paymentMethod, setPaymentMethod] = useState<'kakaopay' | 'tosspay' | 'card'>('kakaopay')
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('kakaopay')
   const [isProcessing, setIsProcessing] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
+  const [paymentResult, setPaymentResult] = useState<PaymentResult | null>(null)
   const [buyerEmail, setBuyerEmail] = useState('')
   const [copiedLink, setCopiedLink] = useState(false)
 
@@ -47,15 +50,30 @@ export function ProductCheckoutClient({
     )
   }
 
-  const handleCheckout = (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsProcessing(true)
 
-    // 결제 시뮬레이션 (1.2초 후 완료 처리)
-    setTimeout(() => {
+    try {
+      const result = await requestDigitalProductPayment({
+        productId: product.id,
+        productTitle: product.title,
+        amount: product.price,
+        buyerEmail: buyerEmail || undefined,
+        method: paymentMethod,
+      })
+
+      if (result.success) {
+        setPaymentResult(result)
+        setIsPaid(true)
+      } else {
+        alert(result.error || '결제가 취소되었습니다.')
+      }
+    } catch (err: any) {
+      alert('결제 처리 중 일시적인 오류가 발생했습니다.')
+    } finally {
       setIsProcessing(false)
-      setIsPaid(true)
-    }, 1200)
+    }
   }
 
   const handleCopyLink = () => {
@@ -128,8 +146,21 @@ export function ProductCheckoutClient({
 
             <div className="max-w-md mx-auto p-4 bg-slate-950/80 rounded-2xl border border-slate-800 text-left text-xs space-y-2">
               <div className="flex justify-between text-slate-400">
+                <span>주문 번호:</span>
+                <span className="font-mono text-emerald-400 font-bold">{paymentResult?.orderId || 'ORD-20261015-LIVE'}</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
                 <span>구매 상품:</span>
                 <span className="font-semibold text-slate-200">{product.title}</span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>결제 수단:</span>
+                <span className="font-semibold text-indigo-400">
+                  {paymentMethod === 'kakaopay' && '카카오페이 간편결제'}
+                  {paymentMethod === 'naverpay' && '네이버페이 포인트/카드'}
+                  {paymentMethod === 'tosspay' && '토스페이 원클릭'}
+                  {paymentMethod === 'card' && '신용/체크카드 승인'}
+                </span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>결제 금액:</span>
@@ -137,7 +168,7 @@ export function ProductCheckoutClient({
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>파일 포맷:</span>
-                <span className="font-semibold text-indigo-400">{product.fileType} ({product.pageCount || '완전판'})</span>
+                <span className="font-semibold text-slate-300">{product.fileType} ({product.pageCount || '완전판'})</span>
               </div>
             </div>
 
@@ -402,13 +433,13 @@ export function ProductCheckoutClient({
                     <label className="text-[11px] font-semibold text-slate-400">
                       원클릭 간편결제 수단
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <button
                         type="button"
                         onClick={() => setPaymentMethod('kakaopay')}
                         className={`h-11 rounded-xl text-xs font-bold flex items-center justify-center transition-all ${
                           paymentMethod === 'kakaopay'
-                            ? 'bg-[#FEE500] text-slate-950 ring-2 ring-indigo-500'
+                            ? 'bg-[#FEE500] text-slate-950 ring-2 ring-indigo-500 shadow-md shadow-amber-500/10'
                             : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
                         }`}
                       >
@@ -417,10 +448,22 @@ export function ProductCheckoutClient({
 
                       <button
                         type="button"
+                        onClick={() => setPaymentMethod('naverpay')}
+                        className={`h-11 rounded-xl text-xs font-bold flex items-center justify-center transition-all ${
+                          paymentMethod === 'naverpay'
+                            ? 'bg-[#03C75A] text-white ring-2 ring-indigo-500 shadow-md shadow-emerald-500/10'
+                            : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
+                        }`}
+                      >
+                        네이버페이
+                      </button>
+
+                      <button
+                        type="button"
                         onClick={() => setPaymentMethod('tosspay')}
                         className={`h-11 rounded-xl text-xs font-bold flex items-center justify-center transition-all ${
                           paymentMethod === 'tosspay'
-                            ? 'bg-[#0064FF] text-white ring-2 ring-indigo-500'
+                            ? 'bg-[#0064FF] text-white ring-2 ring-indigo-500 shadow-md shadow-blue-500/10'
                             : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
                         }`}
                       >
@@ -432,11 +475,11 @@ export function ProductCheckoutClient({
                         onClick={() => setPaymentMethod('card')}
                         className={`h-11 rounded-xl text-xs font-bold flex items-center justify-center transition-all ${
                           paymentMethod === 'card'
-                            ? 'bg-slate-800 text-white ring-2 ring-indigo-500'
+                            ? 'bg-slate-800 text-white ring-2 ring-indigo-500 shadow-md'
                             : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'
                         }`}
                       >
-                        신용카드
+                        신용/체크카드
                       </button>
                     </div>
                   </div>
@@ -461,11 +504,11 @@ export function ProductCheckoutClient({
                   </button>
 
                   <div className="text-center text-[10px] text-slate-500 space-y-1">
-                    <div className="flex items-center justify-center gap-1 text-slate-400 font-semibold">
+                    <div className="flex items-center justify-center gap-1 text-slate-300 font-semibold">
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>1mm Pay 256비트 SSL 암호화 안전 결제 게이트웨이</span>
+                      <span>토스페이먼츠 & 포트원 PG 공식 결제망 연동</span>
                     </div>
-                    <div>본 상품은 디지털 파일 특성상 결제 후 즉시 다운로드 권한이 부여됩니다.</div>
+                    <div>신용카드 · 카카오페이 · 네이버페이 · 토스페이 1초 즉시 승인 지원</div>
                   </div>
                 </form>
               </div>
