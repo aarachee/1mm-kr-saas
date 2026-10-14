@@ -22,13 +22,20 @@ export default function PayLandingPage() {
           
           {/* 브랜드 로고 */}
           <Link href="/pay" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-sm shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-xs shadow-md shadow-indigo-500/25 group-hover:scale-105 transition-transform">
               Pay
             </div>
-            <div className="flex items-center gap-2">
-              <span className="font-black text-lg tracking-tight text-white">1mm Pay</span>
-              <span className="text-[10px] bg-indigo-500/10 text-indigo-300 font-semibold px-2 py-0.5 rounded-full border border-indigo-500/20 hidden sm:inline-block">
-                크리에이터 D2C 결제 솔루션
+            <div className="flex flex-col text-left">
+              <div className="flex items-center gap-1.5 leading-none">
+                <span className="font-black text-base tracking-tight text-white group-hover:text-amber-300 transition-colors">
+                  1미리페이
+                </span>
+                <span className="text-[9px] bg-indigo-500/10 text-indigo-300 font-semibold px-1.5 py-0.5 rounded-full border border-indigo-500/20 hidden sm:inline-block">
+                  크리에이터 D2C 결제
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400 tracking-wider mt-0.5">
+                pay.1mm.kr
               </span>
             </div>
           </Link>
@@ -766,14 +773,14 @@ export default function PayLandingPage() {
       <footer className="border-t border-slate-900 py-10 px-4 sm:px-6 bg-slate-950 text-xs text-slate-500">
         <div className="container mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-300">1mm Pay</span>
+            <span className="font-bold text-slate-300">1미리페이 (pay.1mm.kr)</span>
             <span>•</span>
             <span>크리에이터 원클릭 D2C 결제 엔진</span>
           </div>
 
           <div className="flex items-center gap-6">
             <a href="https://1mm.kr" className="hover:text-slate-300 transition-colors flex items-center gap-1">
-              <span>1mm.kr 단축링크 & QR</span>
+              <span>1미리 (1mm.kr) 단축링크 & QR</span>
               <ExternalLink className="w-3 h-3" />
             </a>
             <Link href="/dashboard" className="hover:text-slate-300 transition-colors">

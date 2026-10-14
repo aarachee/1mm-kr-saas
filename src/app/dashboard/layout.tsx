@@ -20,9 +20,19 @@ export default async function DashboardLayout({
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
       {/* Sidebar */}
       <aside className="w-64 border-r bg-white dark:bg-slate-900 hidden md:flex flex-col">
-        <div className="h-16 flex items-center px-6 border-b font-bold text-xl tracking-tight">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-primary">1mm</span>.kr
+        <div className="h-16 flex items-center px-6 border-b">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-xs shadow-sm group-hover:scale-105 transition-transform">
+              1mm
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="font-black text-base tracking-tight text-slate-900 dark:text-white leading-none">
+                1미리
+              </span>
+              <span className="text-[10px] font-mono text-slate-400 tracking-wider mt-0.5">
+                1mm.kr
+              </span>
+            </div>
           </Link>
         </div>
         <SidebarNav />

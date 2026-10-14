@@ -43,11 +43,18 @@ function LoginFormContent() {
       {/* 상단 미니멀 네비게이션 */}
       <header className="w-full border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md z-10">
         <div className="container mx-auto flex h-14 items-center justify-between px-4 sm:px-6 max-w-5xl">
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-xs shadow-md shadow-indigo-500/20">
               1mm
             </div>
-            <span className="font-black text-base tracking-tight text-white">1mm.kr</span>
+            <div className="flex flex-col text-left">
+              <span className="font-black text-sm tracking-tight text-white leading-none">
+                1미리
+              </span>
+              <span className="text-[9px] font-mono text-slate-400 tracking-wider">
+                1mm.kr
+              </span>
+            </div>
           </Link>
 
           <div className="flex items-center gap-3 text-xs">

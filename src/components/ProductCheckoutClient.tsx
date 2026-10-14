@@ -96,13 +96,18 @@ export function ProductCheckoutClient({
         <div className="container mx-auto max-w-3xl flex h-14 items-center justify-between px-4 sm:px-6">
           <Link 
             href="/pay" 
-            className="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors group"
+            className="flex items-center gap-2.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors group"
           >
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-[10px] shadow-sm">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-[10px] shadow-sm">
               Pay
             </div>
-            <span className="font-black text-sm text-white tracking-tight">1mm Pay</span>
-            <span className="text-[10px] text-slate-400 hidden sm:inline">| 공식 안전 결제</span>
+            <div className="flex flex-col text-left">
+              <div className="flex items-center gap-1.5 leading-none">
+                <span className="font-black text-sm text-white tracking-tight">1미리페이</span>
+                <span className="text-[9px] text-slate-400 hidden sm:inline">공식 안전 결제</span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400 tracking-wider">pay.1mm.kr</span>
+            </div>
           </Link>
 
           <div className="flex items-center gap-2">
