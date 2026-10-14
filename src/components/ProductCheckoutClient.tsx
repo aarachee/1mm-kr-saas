@@ -4,15 +4,23 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { 
   ShieldCheck, Lock, Download, Star, CheckCircle2, Zap, 
-  ArrowLeft, Check, Copy, Sparkles, BookOpen, Clock, UserCheck
+  ArrowLeft, Check, Copy, Sparkles, BookOpen, Clock, UserCheck,
+  MessageSquare, CornerDownRight, HelpCircle
 } from 'lucide-react'
 import { DigitalProductRecord } from '@/lib/digitalProducts'
+import { ReviewRecord, QnaRecord } from '@/lib/creatorFeedback'
 
 interface ProductCheckoutClientProps {
   product: DigitalProductRecord | null
+  initialReviews?: ReviewRecord[]
+  initialQnas?: QnaRecord[]
 }
 
-export function ProductCheckoutClient({ product }: ProductCheckoutClientProps) {
+export function ProductCheckoutClient({ 
+  product, 
+  initialReviews = [],
+  initialQnas = [] 
+}: ProductCheckoutClientProps) {
   const [paymentMethod, setPaymentMethod] = useState<'kakaopay' | 'tosspay' | 'card'>('kakaopay')
   const [isProcessing, setIsProcessing] = useState(false)
   const [isPaid, setIsPaid] = useState(false)
@@ -241,6 +249,92 @@ export function ProductCheckoutClient({ product }: ProductCheckoutClientProps) {
                       <div key={idx} className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
                         <span className="text-slate-300 font-medium">{chap}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 독자 생생 후기 & 작가 공식 답글 */}
+              {initialReviews && initialReviews.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <MessageSquare className="w-3.5 h-3.5 text-amber-400" />
+                      <span>독자 실전 후기 ({initialReviews.length})</span>
+                    </h3>
+                    <div className="flex items-center gap-1 text-[11px] text-amber-400 font-semibold">
+                      <Star className="w-3 h-3 fill-current" />
+                      <span>{product.rating.toFixed(1)} / 5.0</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {initialReviews.map((rev) => (
+                      <div key={rev.id} className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-white text-xs">{rev.customerName}</span>
+                            <div className="flex items-center text-amber-400 text-[10px]">
+                              {Array.from({ length: rev.rating }).map((_, i) => (
+                                <Star key={i} className="w-2.5 h-2.5 fill-current" />
+                              ))}
+                            </div>
+                          </div>
+                          <span className="text-[10px] text-slate-500">{new Date(rev.createdAt).toLocaleDateString()}</span>
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                          {rev.content}
+                        </p>
+
+                        {/* 작가 답글 */}
+                        {rev.creatorReply && (
+                          <div className="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-xs space-y-1">
+                            <div className="flex items-center gap-1.5 text-indigo-400 font-bold text-[11px]">
+                              <CornerDownRight className="w-3 h-3 shrink-0" />
+                              <span>{rev.creatorReply.authorName}</span>
+                            </div>
+                            <p className="text-slate-300 text-[11px] pl-4 leading-relaxed">
+                              {rev.creatorReply.content}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 구매 전 자주 묻는 질문 & 작가 답변 (Q&A) */}
+              {initialQnas && initialQnas.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>구매 전 질문 & 작가 답변 ({initialQnas.length})</span>
+                  </h3>
+
+                  <div className="space-y-2.5">
+                    {initialQnas.map((qna) => (
+                      <div key={qna.id} className="p-3.5 rounded-2xl bg-slate-900/40 border border-slate-800/80 space-y-2 text-xs">
+                        <div className="flex items-start gap-2 text-slate-200 font-semibold">
+                          <span className="text-indigo-400 font-black">Q.</span>
+                          <span>{qna.question}</span>
+                        </div>
+
+                        {qna.answer ? (
+                          <div className="flex items-start gap-2 pl-3 text-slate-300 text-[11px] leading-relaxed bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60">
+                            <span className="text-emerald-400 font-bold shrink-0">A.</span>
+                            <div>
+                              <div className="text-[10px] text-emerald-400 font-bold mb-0.5">{qna.answer.authorName}</div>
+                              <span>{qna.answer.content}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-[10px] text-slate-500 pl-3">
+                            (작가의 답변을 대기 중입니다.)
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

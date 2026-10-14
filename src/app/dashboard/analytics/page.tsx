@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/utils/supabase/server"
 import { ClicksChart } from "@/components/ClicksChart"
@@ -105,8 +106,18 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">전체 통계 및 분석</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">전체 통계 및 분석</h1>
+          <p className="text-xs text-slate-500 mt-1">Google 계정으로 인증된 대표님만의 실시간 트래픽 및 인앱 탈출 분석 데이터입니다.</p>
+        </div>
+        <Link 
+          href="/dashboard/feedback"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-500/20 text-xs font-bold transition-all shadow-sm self-start sm:self-auto"
+        >
+          <span>💬 독자 후기 & Q&A 소통 관리</span>
+          <span>&rarr;</span>
+        </Link>
       </div>
 
       <Card>

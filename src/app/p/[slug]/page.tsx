@@ -1,4 +1,5 @@
 import { findDigitalProductBySlug } from '@/lib/digitalProducts'
+import { getReviewsByProduct, getQnasByProduct } from '@/lib/creatorFeedback'
 import { ProductCheckoutClient } from '@/components/ProductCheckoutClient'
 import { Metadata } from 'next'
 
@@ -6,7 +7,7 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>
-}): Promise<Metadata> {
+}) {
   const { slug } = await params
   const product = findDigitalProductBySlug(slug)
   if (!product) {
@@ -28,6 +29,14 @@ export default async function ProductCheckoutPage({
 }) {
   const { slug } = await params
   const product = findDigitalProductBySlug(slug)
+  const reviews = product ? getReviewsByProduct(product.id) : []
+  const qnas = product ? getQnasByProduct(product.id) : []
 
-  return <ProductCheckoutClient product={product} />
+  return (
+    <ProductCheckoutClient 
+      product={product} 
+      initialReviews={reviews}
+      initialQnas={qnas}
+    />
+  )
 }

@@ -9,6 +9,7 @@ import {
   KeyRound, 
   BarChart3, 
   Wrench, 
+  MessageSquare,
   Settings,
   Sparkles 
 } from "lucide-react"
@@ -19,9 +20,10 @@ export function SidebarNav() {
   const navItems = [
     { name: '대시보드 홈', href: '/dashboard', exact: true, icon: LayoutDashboard },
     { name: '단축 링크 관리', href: '/dashboard/links', icon: Link2 },
+    { name: '후기 & Q&A 소통', href: '/dashboard/feedback', icon: MessageSquare, badge: 'NEW' },
     { name: '완판 템플릿 & 퍼널', href: '/dashboard/playbook', icon: Sparkles, badge: 'HOT' },
-    { name: 'API 키 & 플랜', href: '/dashboard/api-keys', icon: KeyRound, badge: 'B2B' },
     { name: '클릭 통계 및 분석', href: '/dashboard/analytics', icon: BarChart3 },
+    { name: 'API 키 & 플랜', href: '/dashboard/api-keys', icon: KeyRound, badge: 'B2B' },
     { name: '스마트 도구함', href: '/#toolkit', icon: Wrench },
     { name: '환경 설정', href: '/dashboard/settings', icon: Settings },
   ]

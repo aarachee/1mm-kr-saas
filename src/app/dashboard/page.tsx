@@ -4,6 +4,7 @@ import { LinkItem } from "@/components/LinkItem"
 import { ClicksChart } from "@/components/ClicksChart"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { MessageSquare } from "lucide-react"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -107,6 +108,33 @@ export default async function DashboardPage() {
             <ClicksChart data={chartData} />
           </CardContent>
         </Card>
+      </div>
+
+      {/* 크리에이터 독자 소통 허브 배너 */}
+      <div className="p-5 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-500 flex items-center justify-center shrink-0">
+            <MessageSquare className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">독자 후기 답글 & 실시간 Q&A 관리</h3>
+              <span className="text-[10px] bg-rose-500/10 text-rose-500 border border-rose-500/20 px-2 py-0.5 rounded-full font-bold">
+                답변 대기 2건
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              구글 인증 작가님만의 공간입니다. 독자 후기에 답글을 달고 질문에 답변하여 신뢰도를 높여보세요.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/dashboard/feedback"
+          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 shrink-0"
+        >
+          소통 허브 바로가기 &rarr;
+        </Link>
       </div>
 
       {/* Recent Links */}
