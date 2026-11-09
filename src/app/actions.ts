@@ -4,7 +4,7 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 
-import { saveGuestLink, findGuestLink, incrementGuestLinkLikes, claimGuestLinksForUser } from '@/lib/linkStorage'
+import { saveGuestLink, findGuestLink, getAllGuestLinks, incrementGuestLinkLikes, claimGuestLinksForUser } from '@/lib/linkStorage'
 import { validateCustomSlug } from '@/lib/reservedWords'
 import { checkRateLimit } from '@/lib/rateLimit'
 
@@ -98,6 +98,12 @@ export async function createShortLink(formData: FormData): Promise<{
   const profileTitle = (formData.get('profileTitle') as string || '').trim()
   const profileBio = (formData.get('profileBio') as string || '').trim()
 
+  const rawIsPublic = formData.get('isPublic') as string
+  const isPublic = rawIsPublic === 'true' || rawIsPublic === 'on'
+  const dbTitle = isPublic
+    ? (profileTitle ? `public:${profileTitle}` : 'public')
+    : (profileTitle || null)
+
   // 커스텀 단축어가 있으면 금칙어/유보어 및 형식 정밀 검증
   let shortCode = ''
   if (customCode && customCode.trim()) {
@@ -134,6 +140,7 @@ export async function createShortLink(formData: FormData): Promise<{
             long_url: longUrl, 
             long_url_b: longUrlB,
             short_code: shortCode, 
+            title: dbTitle,
             pixel_id: pixelId || null 
           }
         ])
@@ -148,6 +155,8 @@ export async function createShortLink(formData: FormData): Promise<{
           short_code: shortCode,
           long_url: longUrl,
           long_url_b: longUrlB,
+          title: dbTitle,
+          is_public: isPublic,
           pixel_id: pixelId || null,
           user_id: user.id,
           page_mode: isPageMode,
@@ -160,6 +169,8 @@ export async function createShortLink(formData: FormData): Promise<{
           short_code: shortCode,
           long_url: longUrl,
           long_url_b: longUrlB,
+          title: dbTitle,
+          is_public: isPublic,
           pixel_id: pixelId || null,
           user_id: user.id,
           page_mode: isPageMode,
@@ -178,18 +189,41 @@ export async function createShortLink(formData: FormData): Promise<{
         isGuest: false 
       }
     } else {
-      // 2. 비로그인(게스트/일반인)의 경우: 즉시 무료 단축 링크 생성
+      // 2. 비로그인(게스트/일반인)의 경우:
       const existing = findGuestLink(shortCode)
       if (existing) {
         shortCode = generateShortCode()
+      }
+
+      // Supabase에도 user_id: null로 저장 시도하여 전체 시스템에 동기화
+      try {
+        await supabase
+          .from('links')
+          .insert([
+            {
+              user_id: null,
+              long_url: longUrl,
+              long_url_b: longUrlB,
+              short_code: shortCode,
+              title: dbTitle,
+              pixel_id: pixelId || null
+            }
+          ])
+      } catch (insertErr) {
+        console.warn('Guest link supabase insert fallback:', insertErr)
       }
 
       saveGuestLink({
         short_code: shortCode,
         long_url: longUrl,
         long_url_b: longUrlB,
+        title: dbTitle,
+        is_public: isPublic,
         pixel_id: pixelId || null,
-        user_id: null
+        user_id: null,
+        page_mode: isPageMode,
+        profile_title: profileTitle || undefined,
+        profile_bio: profileBio || undefined
       })
 
       revalidatePath('/dashboard')
@@ -209,8 +243,13 @@ export async function createShortLink(formData: FormData): Promise<{
       short_code: shortCode,
       long_url: longUrl,
       long_url_b: longUrlB,
+      title: dbTitle,
+      is_public: isPublic,
       pixel_id: pixelId || null,
-      user_id: null
+      user_id: null,
+      page_mode: isPageMode,
+      profile_title: profileTitle || undefined,
+      profile_bio: profileBio || undefined
     })
 
     return { 
@@ -789,5 +828,94 @@ export async function getEarlyBirdStats(): Promise<{ count: number; max: number 
   } catch (err) {
     console.error('getEarlyBirdStats error:', err)
     return { count: 0, max: 10000 }
+  }
+}
+
+export interface PublicLinkItem {
+  id: string
+  shortCode: string
+  longUrl: string
+  title?: string | null
+  createdAt: string
+  clicksCount: number
+}
+
+/**
+ * 메인 화면 공개 주소 목록 (최근 생성 10개, 인기 10개)
+ */
+export async function getPublicLinks(): Promise<{
+  recent: PublicLinkItem[]
+  popular: PublicLinkItem[]
+}> {
+  try {
+    const supabase = await createClient()
+
+    // 1. Supabase에서 title에 'public'이 포함된 링크 조회
+    const { data: supaLinks, error } = await supabase
+      .from('links')
+      .select('id, short_code, long_url, title, created_at, clicks(count)')
+      .ilike('title', '%public%')
+      .order('created_at', { ascending: false })
+      .limit(30)
+
+    const list: PublicLinkItem[] = []
+
+    if (!error && supaLinks) {
+      supaLinks.forEach((l: any) => {
+        let cleanTitle: string | null = null
+        if (l.title && l.title.startsWith('public:')) {
+          cleanTitle = l.title.replace('public:', '').trim()
+        }
+        list.push({
+          id: l.id,
+          shortCode: l.short_code,
+          longUrl: l.long_url,
+          title: cleanTitle,
+          createdAt: l.created_at,
+          clicksCount: l.clicks?.[0]?.count || 0,
+        })
+      })
+    }
+
+    // 2. guest-links.json 로컬 데이터도 병합 (is_public === true)
+    try {
+      const guestLinks = getAllGuestLinks()
+      guestLinks
+        .filter((g) => g.is_public)
+        .forEach((g) => {
+          if (!list.some((item) => item.shortCode === g.short_code)) {
+            list.push({
+              id: g.id,
+              shortCode: g.short_code,
+              longUrl: g.long_url,
+              title: g.profile_title || null,
+              createdAt: g.created_at,
+              clicksCount: g.clicks_count || 0,
+            })
+          }
+        })
+    } catch {
+      // 로컬 스토리지 읽기 에러 무시
+    }
+
+    // 최근 생성순 10개 (createdAt 최신순)
+    const recent = [...list]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10)
+
+    // 인기 주소 10개 (clicksCount 내림차순, 동일 시 최신순)
+    const popular = [...list]
+      .sort((a, b) => {
+        if (b.clicksCount !== a.clicksCount) {
+          return b.clicksCount - a.clicksCount
+        }
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      })
+      .slice(0, 10)
+
+    return { recent, popular }
+  } catch (err) {
+    console.error('getPublicLinks error:', err)
+    return { recent: [], popular: [] }
   }
 }

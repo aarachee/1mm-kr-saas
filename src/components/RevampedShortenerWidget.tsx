@@ -14,9 +14,10 @@ import Link from 'next/link'
 
 interface RevampedShortenerWidgetProps {
   locale?: Locale
+  onSuccess?: () => void
 }
 
-export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidgetProps) {
+export function RevampedShortenerWidget({ locale = 'ko', onSuccess }: RevampedShortenerWidgetProps) {
   const t = translations[locale]
 
   const [longUrl, setLongUrl] = useState('')
@@ -24,8 +25,8 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
   const [isPageMode, setIsPageMode] = useState(false)
   const [profileTitle, setProfileTitle] = useState('')
   const [profileBio, setProfileBio] = useState('')
+  const [isPublic, setIsPublic] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
-  const [showHelpModal, setShowHelpModal] = useState(false)
   const [showPageModeHelp, setShowPageModeHelp] = useState(false)
   
   const [loading, setLoading] = useState(false)
@@ -109,12 +110,14 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
         if (profileTitle.trim()) formData.append('profileTitle', profileTitle.trim())
         if (profileBio.trim()) formData.append('profileBio', profileBio.trim())
       }
+      formData.append('isPublic', isPublic ? 'true' : 'false')
 
       const res = await createShortLink(formData)
 
       if (res.error) {
         setErrorMessage(res.error)
       } else if (res.shortCode) {
+        onSuccess?.()
         const origin = typeof window !== 'undefined' ? window.location.origin : 'https://1mm.kr'
         const fullShortUrl = `${origin}/${res.shortCode}`
         
@@ -165,22 +168,11 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
             aria-hidden="true"
           />
           
-          {/* 간소화된 URL 입력창 헤더: '단축할 주소'만 표기 + 별도 도움말 버튼 */}
+          {/* 간소화된 URL 입력창: '단축할 주소'만 표기 */}
           <div className="space-y-1.5 text-left">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-[#101828] dark:text-[#EAECF0]">
-                {t.inputLabel}
-              </label>
-
-              <button
-                type="button"
-                onClick={() => setShowHelpModal(true)}
-                className="inline-flex items-center gap-1 text-[11px] text-[#667085] dark:text-[#98A2B3] hover:text-[#F04438] transition-colors"
-              >
-                <HelpCircle className="w-3.5 h-3.5" />
-                <span>{t.help}</span>
-              </button>
-            </div>
+            <label className="block text-xs font-bold text-[#101828] dark:text-[#EAECF0]">
+              {t.inputLabel}
+            </label>
 
             <div className="relative">
               <input
@@ -307,6 +299,29 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
                 )}
               </div>
 
+              {/* 공개 여부 설정 */}
+              <div className="pt-2 border-t border-[#E4E7EC] dark:border-[#21262D] flex items-center justify-between">
+                <div>
+                  <label 
+                    htmlFor="is-public-checkbox"
+                    className="text-xs font-bold text-[#101828] dark:text-white flex items-center gap-1.5 cursor-pointer select-none"
+                  >
+                    <span>{t.isPublicTitle}</span>
+                  </label>
+                  <p className="text-[11px] text-[#667085] dark:text-[#98A2B3] mt-0.5">
+                    {t.isPublicDesc}
+                  </p>
+                </div>
+
+                <input
+                  id="is-public-checkbox"
+                  type="checkbox"
+                  checked={isPublic}
+                  onChange={(e) => setIsPublic(e.target.checked)}
+                  className="w-4 h-4 rounded accent-[#F04438] cursor-pointer"
+                />
+              </div>
+
             </div>
           )}
 
@@ -404,81 +419,6 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
         )}
 
       </div>
-
-      {/* 3. 별도 제공 도움말 모달 (서비스 제공에 필요한 글자 외 상세 설명) */}
-      {showHelpModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[#161B22] border border-[#E4E7EC] dark:border-[#30363D] p-6 shadow-2xl space-y-5 text-left">
-            <div className="flex items-center justify-between border-b border-[#E4E7EC] dark:border-[#21262D] pb-3">
-              <h3 className="text-base font-bold text-[#101828] dark:text-white">
-                {t.helpTitle}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowHelpModal(false)}
-                className="p-1 rounded-lg text-[#667085] hover:text-[#101828] dark:hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-xs text-[#475467] dark:text-[#98A2B3] leading-relaxed">
-              <div className="space-y-1">
-                <div className="font-bold text-[#101828] dark:text-[#EAECF0]">
-                  {locale === 'ko' ? '1. 단축 주소' : '1. Short Links'}
-                </div>
-                <p>
-                  {locale === 'ko' 
-                    ? '복사된 긴 링크를 짧게 줄여 프로필 바이오와 문자 발송(SMS) 바이트를 낭비 없이 절약합니다.' 
-                    : 'Shortens long URLs to save bio character space and SMS byte costs.'}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <div className="font-bold text-[#101828] dark:text-[#EAECF0]">
-                  {locale === 'ko' ? '2. 인앱 브라우저 자동 탈출' : '2. In-App Browser Escape'}
-                </div>
-                <p>
-                  {locale === 'ko' 
-                    ? '인스타그램이나 카카오톡 내부 웹뷰에서 링크를 열었을 때 발생하는 로그인 풀림을 방지하고, 스마트폰의 사파리나 크롬 브라우저로 직접 연결합니다.' 
-                    : 'Prevents webview session drops in Instagram and KakaoTalk by launching Safari or Chrome directly.'}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <div className="font-bold text-[#101828] dark:text-[#EAECF0]">
-                  {locale === 'ko' ? '3. 미니홈피' : '3. Mini-Page'}
-                </div>
-                <p>
-                  {locale === 'ko' 
-                    ? '단순 이동 대신 프로필, SNS 멀티링크, 추천 제품 목록, 전자책/디지털 파일 원클릭 결제창이 포함된 모바일 페이지를 생성할 수 있습니다.' 
-                    : 'Provides an all-in-one mobile page with profile, multi-links, product recommendations, and digital file checkout.'}
-                </p>
-              </div>
-
-              <div className="space-y-1">
-                <div className="font-bold text-[#101828] dark:text-[#EAECF0]">
-                  {locale === 'ko' ? '4. 1인당 3개 무료 슬롯 정책' : '4. 3 Free Slots Policy'}
-                </div>
-                <p>
-                  {locale === 'ko' 
-                    ? '얼리버드 10,000명 한정으로 계정당 고유 브랜드/한글 1개와 3자리 초단축 2개가 무료로 제공됩니다.' 
-                    : 'Early bird accounts receive 1 custom brand slug and 2 ultra-short 3-character slugs for free.'}
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowHelpModal(false)}
-              className="w-full py-2.5 rounded-xl bg-[#F2F4F7] dark:bg-[#21262D] hover:bg-[#E4E7EC] dark:hover:bg-[#30363D] text-[#101828] dark:text-white font-semibold text-xs transition-colors"
-            >
-              {t.helpClose}
-            </button>
-          </div>
-        </div>
-      )}
-
     </div>
   )
 }

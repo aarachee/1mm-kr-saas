@@ -24,8 +24,10 @@ export interface ShortLinkRecord {
   short_code: string
   long_url: string
   long_url_b?: string | null
+  title?: string | null
   pixel_id?: string | null
   is_active: boolean
+  is_public?: boolean
   created_at: string
   user_id?: string | null
   clicks_count?: number

@@ -1,12 +1,33 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { 
+  Clock, TrendingUp, ExternalLink, Link2, 
+  Smartphone, Layers, ShieldCheck 
+} from 'lucide-react'
 import { RevampedShortenerWidget } from '@/components/RevampedShortenerWidget'
 import { ThemeAndLangControls } from '@/components/ThemeAndLangControls'
 import { Locale, translations } from '@/lib/i18n'
-import { getEarlyBirdStats } from '@/app/actions'
+import { getEarlyBirdStats, getPublicLinks, PublicLinkItem } from '@/app/actions'
 import { createClient } from '@/utils/supabase/client'
+
+function formatRelativeTime(dateStr: string, locale: Locale): string {
+  try {
+    const diff = Date.now() - new Date(dateStr).getTime()
+    const minutes = Math.floor(diff / (60 * 1000))
+    if (minutes < 1) return locale === 'ko' ? '방금 전' : 'just now'
+    if (minutes < 60) return locale === 'ko' ? `${minutes}분 전` : `${minutes}m ago`
+    const hours = Math.floor(minutes / 60)
+    if (hours < 24) return locale === 'ko' ? `${hours}시간 전` : `${hours}h ago`
+    const days = Math.floor(hours / 24)
+    if (days < 30) return locale === 'ko' ? `${days}일 전` : `${days}d ago`
+    const d = new Date(dateStr)
+    return `${d.getMonth() + 1}/${d.getDate()}`
+  } catch {
+    return ''
+  }
+}
 
 export default function HomePage() {
   const [locale, setLocale] = useState<Locale>('ko')
@@ -17,15 +38,35 @@ export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const MAX_USERS = 10000
 
-  useEffect(() => {
-    // 1. 실제 얼리버드 참여 통계 조회
+  // 최근 생성 주소 10개 및 인기 주소 10개 상태
+  const [publicLinks, setPublicLinks] = useState<{
+    recent: PublicLinkItem[]
+    popular: PublicLinkItem[]
+  }>({
+    recent: [],
+    popular: [],
+  })
+
+  const loadData = useCallback(() => {
+    // 1. 얼리버드 참여 통계 조회
     getEarlyBirdStats().then((res) => {
       if (typeof res?.count === 'number') {
         setUserCount(res.count)
       }
     })
 
-    // 2. 로그인 상태 조회
+    // 2. 공개 링크 목록 (최근 10개, 인기 10개) 조회
+    getPublicLinks().then((res) => {
+      if (res && res.recent && res.popular) {
+        setPublicLinks(res)
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    loadData()
+
+    // 3. 로그인 상태 조회
     try {
       const supabase = createClient()
       supabase.auth.getUser().then(({ data }) => {
@@ -36,7 +77,7 @@ export default function HomePage() {
     } catch {
       // 오류 시 기본 로그인 버튼 유지
     }
-  }, [])
+  }, [loadData])
 
   const countDisplay = userCount !== null ? userCount.toLocaleString() : '...'
   const progressPercent = userCount !== null
@@ -96,8 +137,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* 2. 메인 히어로 섹션 (중복 수식어 배제, 핵심 설명 집중) */}
-      <main className="flex-1 relative overflow-hidden pt-12 sm:pt-16 pb-20 px-4 sm:px-6">
+      {/* 2. 메인 히어로 섹션 */}
+      <main className="flex-1 relative overflow-hidden pt-12 sm:pt-16 pb-12 px-4 sm:px-6">
         
         {/* 정제된 코발트 레드 앰비언트 글로우 */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-[#C01025]/8 blur-[120px] rounded-full pointer-events-none" />
@@ -121,15 +162,199 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* 메인 단축 위젯 */}
+          {/* 메인 단축 위젯 (공개 체크박스 포함, 생성 시 목록 리프레시) */}
           <div className="pt-2">
-            <RevampedShortenerWidget locale={locale} />
+            <RevampedShortenerWidget locale={locale} onSuccess={loadData} />
           </div>
 
         </div>
       </main>
 
-      {/* 3. 미니멀 푸터 (중복 없는 단일 표기 및 링크) */}
+      {/* 3. 공개 주소 2단 섹션 (최근 생성 10개 | 인기 주소 10개) */}
+      <section className="py-6 px-4 sm:px-6 bg-[#F9FAFB] dark:bg-[#090A0C]">
+        <div className="container mx-auto max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            
+            {/* 좌측: 최근 생성된 주소 10개 */}
+            <div className="rounded-2xl bg-white dark:bg-[#161B22] border border-[#E4E7EC] dark:border-[#21262D] p-5 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EC] dark:border-[#21262D]">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-[#F04438]" />
+                    <h2 className="text-sm font-bold text-[#101828] dark:text-white">
+                      {t.recentLinksTitle}
+                    </h2>
+                  </div>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F2F4F7] dark:bg-[#21262D] text-[#667085] dark:text-[#98A2B3] border border-[#E4E7EC] dark:border-[#30363D]">
+                    {t.recentBadge}
+                  </span>
+                </div>
+
+                <div className="divide-y divide-[#F2F4F7] dark:divide-[#21262D]/60 mt-1">
+                  {publicLinks.recent.length > 0 ? (
+                    publicLinks.recent.map((item, idx) => (
+                      <div key={item.id || idx} className="py-2.5 flex items-center justify-between gap-3 text-left">
+                        <div className="min-w-0 flex-1">
+                          <a
+                            href={`/${item.shortCode}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 font-mono font-bold text-xs text-[#F04438] hover:underline"
+                          >
+                            <span>1mm.kr/{item.shortCode}</span>
+                            <ExternalLink className="w-3 h-3 opacity-60" />
+                          </a>
+                          <p className="text-[11px] text-[#667085] dark:text-[#98A2B3] truncate mt-0.5">
+                            {item.title ? `${item.title} • ` : ''}{item.longUrl}
+                          </p>
+                        </div>
+                        <span className="text-[10px] text-[#98A2B3] font-mono shrink-0">
+                          {formatRelativeTime(item.createdAt, locale)}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-8 text-center text-xs text-[#667085] dark:text-[#98A2B3] space-y-1">
+                      <p>{t.noRecentLinks}</p>
+                      <p className="text-[11px] text-[#98A2B3] dark:text-[#667085]">
+                        {t.publicLinksHint}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 우측: 인기 주소 10개 */}
+            <div className="rounded-2xl bg-white dark:bg-[#161B22] border border-[#E4E7EC] dark:border-[#21262D] p-5 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EC] dark:border-[#21262D]">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-[#F04438]" />
+                    <h2 className="text-sm font-bold text-[#101828] dark:text-white">
+                      {t.popularLinksTitle}
+                    </h2>
+                  </div>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F2F4F7] dark:bg-[#21262D] text-[#667085] dark:text-[#98A2B3] border border-[#E4E7EC] dark:border-[#30363D]">
+                    {t.popularBadge}
+                  </span>
+                </div>
+
+                <div className="divide-y divide-[#F2F4F7] dark:divide-[#21262D]/60 mt-1">
+                  {publicLinks.popular.length > 0 ? (
+                    publicLinks.popular.map((item, idx) => (
+                      <div key={item.id || idx} className="py-2.5 flex items-center justify-between gap-3 text-left">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                            idx === 0 
+                              ? 'bg-[#F04438] text-white' 
+                              : idx < 3 
+                              ? 'bg-[#C01025]/15 text-[#F04438]' 
+                              : 'bg-[#F2F4F7] dark:bg-[#21262D] text-[#667085] dark:text-[#98A2B3]'
+                          }`}>
+                            {idx + 1}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <a
+                              href={`/${item.shortCode}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-mono font-bold text-xs text-[#101828] dark:text-white hover:text-[#F04438] transition-colors"
+                            >
+                              <span>1mm.kr/{item.shortCode}</span>
+                              <ExternalLink className="w-3 h-3 opacity-60" />
+                            </a>
+                            <p className="text-[11px] text-[#667085] dark:text-[#98A2B3] truncate mt-0.5">
+                              {item.title ? `${item.title} • ` : ''}{item.longUrl}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-semibold text-[#F04438] bg-[#F04438]/10 px-2 py-0.5 rounded-md font-mono shrink-0">
+                          {item.clicksCount} {t.clicksSuffix}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-8 text-center text-xs text-[#667085] dark:text-[#98A2B3] space-y-1">
+                      <p>{t.noPopularLinks}</p>
+                      <p className="text-[11px] text-[#98A2B3] dark:text-[#667085]">
+                        {t.publicLinksHint}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 4. 서비스 이용 안내 카드 (도움말 모달 대신 하단 카드 제공) */}
+      <section className="py-8 px-4 sm:px-6 bg-[#F9FAFB] dark:bg-[#090A0C]">
+        <div className="container mx-auto max-w-5xl">
+          <div className="rounded-2xl bg-white dark:bg-[#161B22] border border-[#E4E7EC] dark:border-[#21262D] p-6 sm:p-8 shadow-xs space-y-5">
+            
+            <div className="border-b border-[#E4E7EC] dark:border-[#21262D] pb-3 text-left">
+              <h3 className="text-sm sm:text-base font-bold text-[#101828] dark:text-white">
+                {t.guideTitle}
+              </h3>
+              <p className="text-xs text-[#667085] dark:text-[#98A2B3] mt-1">
+                {t.guideSubtitle}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              {/* 안내 1: 단축 주소 */}
+              <div className="p-4 rounded-xl bg-[#F9FAFB] dark:bg-[#0D1117] border border-[#E4E7EC] dark:border-[#21262D] space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-xs text-[#101828] dark:text-white">
+                  <Link2 className="w-4 h-4 text-[#F04438]" />
+                  <span>1. {t.guideItem1Title}</span>
+                </div>
+                <p className="text-xs text-[#667085] dark:text-[#98A2B3] leading-relaxed pl-6">
+                  {t.guideItem1Desc}
+                </p>
+              </div>
+
+              {/* 안내 2: 인앱 브라우저 탈출 */}
+              <div className="p-4 rounded-xl bg-[#F9FAFB] dark:bg-[#0D1117] border border-[#E4E7EC] dark:border-[#21262D] space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-xs text-[#101828] dark:text-white">
+                  <Smartphone className="w-4 h-4 text-[#F04438]" />
+                  <span>2. {t.guideItem2Title}</span>
+                </div>
+                <p className="text-xs text-[#667085] dark:text-[#98A2B3] leading-relaxed pl-6">
+                  {t.guideItem2Desc}
+                </p>
+              </div>
+
+              {/* 안내 3: 미니홈피 */}
+              <div className="p-4 rounded-xl bg-[#F9FAFB] dark:bg-[#0D1117] border border-[#E4E7EC] dark:border-[#21262D] space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-xs text-[#101828] dark:text-white">
+                  <Layers className="w-4 h-4 text-[#F04438]" />
+                  <span>3. {t.guideItem3Title}</span>
+                </div>
+                <p className="text-xs text-[#667085] dark:text-[#98A2B3] leading-relaxed pl-6">
+                  {t.guideItem3Desc}
+                </p>
+              </div>
+
+              {/* 안내 4: 3개 무료 슬롯 정책 */}
+              <div className="p-4 rounded-xl bg-[#F9FAFB] dark:bg-[#0D1117] border border-[#E4E7EC] dark:border-[#21262D] space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-xs text-[#101828] dark:text-white">
+                  <ShieldCheck className="w-4 h-4 text-[#F04438]" />
+                  <span>4. {t.guideItem4Title}</span>
+                </div>
+                <p className="text-xs text-[#667085] dark:text-[#98A2B3] leading-relaxed pl-6">
+                  {t.guideItem4Desc}
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 5. 미니멀 푸터 (중복 없는 단일 표기 및 링크) */}
       <footer className="border-t border-[#E4E7EC] dark:border-[#21262D] py-6 px-4 sm:px-6 bg-white dark:bg-[#090A0C] text-xs text-[#667085] transition-colors">
         <div className="container mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <span className="font-semibold text-[#101828] dark:text-[#EAECF0]">{t.domain}</span>
