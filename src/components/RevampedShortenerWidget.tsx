@@ -26,6 +26,7 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
   const [profileBio, setProfileBio] = useState('')
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [showHelpModal, setShowHelpModal] = useState(false)
+  const [showPageModeHelp, setShowPageModeHelp] = useState(false)
   
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -247,26 +248,44 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
                 )}
               </div>
 
-              {/* 개별 마이크로 페이지 모드 토글 */}
-              <div className="pt-2 border-t border-[#E4E7EC] dark:border-[#21262D] space-y-3">
+              {/* 미니홈피 생성 토글 */}
+              <div className="pt-2 border-t border-[#E4E7EC] dark:border-[#21262D] space-y-2">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-bold text-[#101828] dark:text-white flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <label 
+                      htmlFor="page-mode-checkbox" 
+                      className="text-xs font-bold text-[#101828] dark:text-white flex items-center gap-1.5 cursor-pointer select-none"
+                    >
                       <Layers className="w-3.5 h-3.5 text-[#F04438]" />
                       <span>{t.pageModeTitle}</span>
-                    </div>
-                    <p className="text-[11px] text-[#667085] dark:text-[#98A2B3] mt-0.5">
-                      {t.pageModeDesc}
-                    </p>
+                    </label>
+
+                    {/* ⓘ 안내 버튼 */}
+                    <button
+                      type="button"
+                      onClick={() => setShowPageModeHelp(!showPageModeHelp)}
+                      className="text-[#667085] hover:text-[#101828] dark:text-[#98A2B3] dark:hover:text-white transition-colors p-0.5 rounded focus:outline-none"
+                      title={t.help}
+                    >
+                      <HelpCircle className="w-3.5 h-3.5" />
+                    </button>
                   </div>
 
                   <input
+                    id="page-mode-checkbox"
                     type="checkbox"
                     checked={isPageMode}
                     onChange={(e) => setIsPageMode(e.target.checked)}
                     className="w-4 h-4 rounded accent-[#F04438] cursor-pointer"
                   />
                 </div>
+
+                {/* ⓘ 클릭 시에만 노출되는 상세 안내 */}
+                {showPageModeHelp && (
+                  <div className="p-2.5 rounded-lg bg-[#F2F4F7] dark:bg-[#21262D] border border-[#E4E7EC] dark:border-[#30363D] text-[11px] text-[#475467] dark:text-[#D0D5DD] leading-relaxed transition-all">
+                    {t.pageModeDesc}
+                  </div>
+                )}
 
                 {isPageMode && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
@@ -406,12 +425,12 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
             <div className="space-y-4 text-xs text-[#475467] dark:text-[#98A2B3] leading-relaxed">
               <div className="space-y-1">
                 <div className="font-bold text-[#101828] dark:text-[#EAECF0]">
-                  {locale === 'ko' ? '1. 10자 초단축 주소' : '1. 10-Character Short Links'}
+                  {locale === 'ko' ? '1. 단축 주소' : '1. Short Links'}
                 </div>
                 <p>
                   {locale === 'ko' 
-                    ? '복사된 긴 링크를 10글자로 줄여 인스타그램 프로필 바이오와 문자 발송(SMS) 바이트를 낭비 없이 절약합니다.' 
-                    : 'Shortens long URLs to 10 characters to save bio character space and SMS carrier byte costs.'}
+                    ? '복사된 긴 링크를 짧게 줄여 프로필 바이오와 문자 발송(SMS) 바이트를 낭비 없이 절약합니다.' 
+                    : 'Shortens long URLs to save bio character space and SMS byte costs.'}
                 </p>
               </div>
 
@@ -428,12 +447,12 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
 
               <div className="space-y-1">
                 <div className="font-bold text-[#101828] dark:text-[#EAECF0]">
-                  {locale === 'ko' ? '3. 개별 전시 및 판매 페이지' : '3. Individual Showcase & Shop'}
+                  {locale === 'ko' ? '3. 미니홈피' : '3. Mini-Page'}
                 </div>
                 <p>
                   {locale === 'ko' 
-                    ? '단순 이동 대신 내 프로필, SNS 멀티링크, 번호별 추천 제품 목록, 전자책/디지털 파일 원클릭 결제창이 포함된 모바일 미니샵을 링크 하나로 생성할 수 있습니다.' 
-                    : 'Provides an all-in-one mobile page with profile branding, multi-links, numbered product directory, and digital file checkout.'}
+                    ? '단순 이동 대신 프로필, SNS 멀티링크, 추천 제품 목록, 전자책/디지털 파일 원클릭 결제창이 포함된 모바일 페이지를 생성할 수 있습니다.' 
+                    : 'Provides an all-in-one mobile page with profile, multi-links, product recommendations, and digital file checkout.'}
                 </p>
               </div>
 

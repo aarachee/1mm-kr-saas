@@ -2,6 +2,7 @@
  * 1mm.kr 다국어(i18n) 사전 및 유틸리티
  * 
  * 원칙: 한국어와 영어를 절대 섞어서 표기하지 않음 (100% 분리).
+ * 중복 및 불필요한 마케팅 수식어 배제.
  */
 
 export type Locale = 'ko' | 'en'
@@ -10,15 +11,14 @@ export const translations = {
   ko: {
     brandName: '1미리',
     domain: '1mm.kr',
-    badgeHeader: '10자 단축 인프라',
     limitCounterPrefix: '1만명 한정 혜택:',
     limitCounterSuffix: '명 참여',
     login: '로그인',
     dashboard: '대시보드',
-    heroBadge: '단축 주소 및 개별 페이지 인프라',
-    heroTitleLine1: '국내 최단 10자 단축링크,',
-    heroTitleLine2: '전시 및 판매 개별 페이지 지원',
-    heroDescription: '긴 주소를 10글자로 즉시 단축하고, 프로필 전시와 디지털 상품 판매가 가능한 모바일 최적화 페이지를 제공합니다.',
+
+    // 메인 헤드라인 (간결하고 명확한 설명)
+    heroTitle: '단축 주소와 미니홈피',
+    heroDescription: '긴 주소를 줄여주고, 미니홈피를 제공합니다.',
     
     // 위젯
     inputLabel: '단축할 주소',
@@ -36,9 +36,9 @@ export const translations = {
     customSlugLabel: '원하는 단축어 지정 (선택)',
     customSlugHelp: '한글 2자 이상, 영문 3자 이상',
     customSlugPlaceholder: '민수 (또는 abc)',
-    pageModeTitle: '개별 전시 및 판매 페이지 생성',
+    pageModeTitle: '미니홈피 생성',
     pageModeDesc: '단순 이동 대신 프로필, 추천 제품 목록, 전자책 결제창이 포함된 모바일 페이지를 제공합니다.',
-    profileTitlePlaceholder: '프로필 이름 (예: 크리에이터 민수)',
+    profileTitlePlaceholder: '프로필 이름 (예: 민수)',
     profileBioPlaceholder: '한 줄 소개',
 
     // 결과
@@ -57,7 +57,6 @@ export const translations = {
     noticeMinLenKo: '한글 단축어는 최소 2글자 이상이어야 합니다 (예: 1mm.kr/민수).',
 
     // 푸터
-    footerDesc: '1미리 (1mm.kr) • 단축링크 및 개별 페이지 인프라',
     footerTop: '맨 위로 ↑',
 
     // 테마
@@ -69,15 +68,14 @@ export const translations = {
   en: {
     brandName: '1mm',
     domain: '1mm.kr',
-    badgeHeader: '10-Char Infra',
     limitCounterPrefix: 'Limit 10,000 Free:',
     limitCounterSuffix: 'joined',
     login: 'Log in',
     dashboard: 'Dashboard',
-    heroBadge: 'Short Link & Micro Page Infrastructure',
-    heroTitleLine1: 'Shortest 10-Character Link,',
-    heroTitleLine2: 'Individual Showcase & Shop Page',
-    heroDescription: 'Shorten long URLs to 10 characters in 1 second, and create mobile-optimized showcase and checkout pages.',
+
+    // Main Headline
+    heroTitle: 'Short Links & Mini-Page',
+    heroDescription: 'Shortens long URLs and provides a mini-homepage.',
     
     // Widget
     inputLabel: 'URL to shorten',
@@ -95,8 +93,8 @@ export const translations = {
     customSlugLabel: 'Custom slug (Optional)',
     customSlugHelp: 'Min 2 chars for Korean, 3 chars for English',
     customSlugPlaceholder: 'mybrand (or abc)',
-    pageModeTitle: 'Create individual showcase & shop page',
-    pageModeDesc: 'Provides a mobile landing page with profile, product directory, and digital checkout.',
+    pageModeTitle: 'Create mini-page',
+    pageModeDesc: 'Provides a mobile page with profile, recommendations, and digital checkout instead of simple redirection.',
     profileTitlePlaceholder: 'Profile name',
     profileBioPlaceholder: 'Short bio',
 
@@ -116,7 +114,6 @@ export const translations = {
     noticeMinLenKo: 'Korean slug must be at least 2 characters (e.g., 1mm.kr/민수).',
 
     // Footer
-    footerDesc: '1mm.kr • Ultra Short Link & Micro Page Infrastructure',
     footerTop: 'Top ↑',
 
     // Theme
@@ -125,4 +122,3 @@ export const translations = {
     themeDark: 'Dark',
   }
 }
-

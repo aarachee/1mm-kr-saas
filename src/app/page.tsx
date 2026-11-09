@@ -50,20 +50,15 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 w-full border-b border-[#E4E7EC] dark:border-[#21262D] bg-white/90 dark:bg-[#090A0C]/90 backdrop-blur-md transition-colors">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 max-w-5xl">
           
-          {/* 브랜드 로고 */}
+          {/* 브랜드 로고 (마케팅 수식어 배제) */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-lg bg-[#C01025] flex items-center justify-center text-white font-black text-xs shadow-md group-hover:bg-[#F04438] transition-colors">
               1mm
             </div>
             <div className="flex flex-col text-left">
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="font-bold text-base tracking-tight text-[#101828] dark:text-white group-hover:text-[#F04438] transition-colors">
-                  {t.brandName}
-                </span>
-                <span className="text-[10px] bg-[#F2F4F7] dark:bg-[#21262D] text-[#667085] dark:text-[#98A2B3] px-1.5 py-0.5 rounded border border-[#E4E7EC] dark:border-[#30363D] hidden sm:inline-block">
-                  {t.badgeHeader}
-                </span>
-              </div>
+              <span className="font-bold text-base tracking-tight text-[#101828] dark:text-white group-hover:text-[#F04438] transition-colors leading-none">
+                {t.brandName}
+              </span>
               <span className="text-[10px] font-mono text-[#667085] tracking-wider mt-0.5">
                 {t.domain}
               </span>
@@ -84,7 +79,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 우측 컨트롤: 테마 & 언어 스위처 + 단일 일관된 액션 버튼 */}
+          {/* 우측 컨트롤: 테마 & 언어 스위처 + 단일 액션 버튼 (중복 배제) */}
           <div className="flex items-center gap-2.5">
             <ThemeAndLangControls
               currentLocale={locale}
@@ -101,13 +96,13 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* 2. 메인 히어로 섹션 */}
+      {/* 2. 메인 히어로 섹션 (중복 수식어 배제, 핵심 설명 집중) */}
       <main className="flex-1 relative overflow-hidden pt-12 sm:pt-16 pb-20 px-4 sm:px-6">
         
         {/* 정제된 코발트 레드 앰비언트 글로우 */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-[#C01025]/8 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="container mx-auto max-w-4xl relative z-10 text-center space-y-7">
+        <div className="container mx-auto max-w-4xl relative z-10 text-center space-y-6">
           
           {/* 모바일용 카운터 뱃지 */}
           <div className="inline-flex lg:hidden items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-[#161B22] border border-[#E4E7EC] dark:border-[#30363D] text-[11px] text-[#667085] dark:text-[#98A2B3] shadow-xs">
@@ -115,20 +110,13 @@ export default function HomePage() {
             <span>{t.limitCounterPrefix} <strong>{countDisplay}</strong> / {MAX_USERS.toLocaleString()} {t.limitCounterSuffix}</span>
           </div>
 
-          {/* 메인 헤드라인 */}
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F04438]/10 border border-[#F04438]/30 text-[#F04438] text-xs font-bold">
-              <span>{t.heroBadge}</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-[#101828] dark:text-white max-w-3xl mx-auto">
-              {t.heroTitleLine1} <br />
-              <span className="text-[#F04438]">
-                {t.heroTitleLine2}
-              </span>
+          {/* 메인 헤드라인 및 설명 */}
+          <div className="space-y-2">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-[#101828] dark:text-white max-w-2xl mx-auto">
+              {t.heroTitle}
             </h1>
 
-            <p className="text-[#667085] dark:text-[#98A2B3] text-xs sm:text-sm max-w-xl mx-auto font-normal leading-relaxed pt-1">
+            <p className="text-[#667085] dark:text-[#98A2B3] text-sm sm:text-base max-w-xl mx-auto font-normal leading-relaxed pt-0.5">
               {t.heroDescription}
             </p>
           </div>
@@ -141,21 +129,17 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* 3. 미니멀 푸터 */}
-      <footer className="border-t border-[#E4E7EC] dark:border-[#21262D] py-8 px-4 sm:px-6 bg-white dark:bg-[#090A0C] text-xs text-[#667085] transition-colors">
+      {/* 3. 미니멀 푸터 (중복 없는 단일 표기 및 링크) */}
+      <footer className="border-t border-[#E4E7EC] dark:border-[#21262D] py-6 px-4 sm:px-6 bg-white dark:bg-[#090A0C] text-xs text-[#667085] transition-colors">
         <div className="container mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-[#101828] dark:text-[#EAECF0]">{t.brandName} ({t.domain})</span>
-            <span>•</span>
-            <span>{t.footerDesc}</span>
-          </div>
+          <span className="font-semibold text-[#101828] dark:text-[#EAECF0]">{t.domain}</span>
 
           <div className="flex items-center gap-6">
-            <Link href="/login" className="hover:text-[#101828] dark:hover:text-[#EAECF0] transition-colors">
-              {t.login}
-            </Link>
-            <Link href="/dashboard" className="hover:text-[#101828] dark:hover:text-[#EAECF0] transition-colors">
-              {t.dashboard}
+            <Link 
+              href={isLoggedIn ? "/dashboard" : "/login"} 
+              className="hover:text-[#101828] dark:hover:text-[#EAECF0] transition-colors"
+            >
+              {isLoggedIn ? t.dashboard : t.login}
             </Link>
             <a href="#top" className="hover:text-[#101828] dark:hover:text-[#EAECF0] transition-colors">
               {t.footerTop}
