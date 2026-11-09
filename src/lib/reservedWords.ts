@@ -312,12 +312,16 @@ export function validateCustomSlug(
     }
   }
 
-  // 2. 글자 수 검사 (최소 3글자 이상 지원)
-  if (slug.length < 3) {
+  // 2. 글자 수 검사 (한글은 2글자 이상, 영문/숫자는 3글자 이상 지원)
+  const hasKorean = /[가-힣]/.test(slug)
+  const minLength = hasKorean ? 2 : 3
+  if (slug.length < minLength) {
     return {
       valid: false,
       category: 'format',
-      reason: '단축어는 최소 3글자 이상이어야 합니다 (예: 1mm.kr/abc).',
+      reason: hasKorean
+        ? '한글 단축어는 최소 2글자 이상이어야 합니다 (예: 1mm.kr/민수).'
+        : '영문 단축어는 최소 3글자 이상이어야 합니다 (예: 1mm.kr/abc).',
     }
   }
 

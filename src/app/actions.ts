@@ -767,3 +767,27 @@ export async function createDigitalProductAction(data: {
     return { error: '디지털 상품 등록에 실패했습니다.' }
   }
 }
+
+/**
+ * 얼리버드 1만명 한정 혜택 실제 참여 데이터 조회
+ */
+export async function getEarlyBirdStats(): Promise<{ count: number; max: number }> {
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('links')
+      .select('user_id')
+
+    if (error || !data) {
+      return { count: 0, max: 10000 }
+    }
+
+    const uniqueUsers = new Set(data.map(d => d.user_id).filter(Boolean))
+    // 실제 유니크 참여 사용자 수 (없을 경우 링크 생성 수 반환)
+    const realCount = uniqueUsers.size > 0 ? uniqueUsers.size : data.length
+    return { count: realCount, max: 10000 }
+  } catch (err) {
+    console.error('getEarlyBirdStats error:', err)
+    return { count: 0, max: 10000 }
+  }
+}

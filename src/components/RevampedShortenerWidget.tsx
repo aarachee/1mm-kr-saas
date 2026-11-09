@@ -57,8 +57,13 @@ export function RevampedShortenerWidget({ locale = 'ko' }: RevampedShortenerWidg
       return
     }
 
-    if (val.length < 3) {
-      setSlugNotice({ isWarning: true, message: t.noticeMinLen })
+    const hasKorean = /[가-힣]/.test(val)
+    const minLength = hasKorean ? 2 : 3
+    if (val.length < minLength) {
+      setSlugNotice({ 
+        isWarning: true, 
+        message: hasKorean ? t.noticeMinLenKo : t.noticeMinLen 
+      })
       return
     }
 
