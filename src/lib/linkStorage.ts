@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import os from 'os'
 
 export interface MultiLinkButton {
   platform: 'daangn' | 'naver' | 'baemin' | 'instagram' | 'call' | 'custom'
@@ -64,94 +65,144 @@ export interface ShortLinkRecord {
   }
 }
 
-const DATA_DIR = path.join(process.cwd(), 'src', 'data')
-const FILE_PATH = path.join(DATA_DIR, 'guest-links.json')
+// 번들된 읽기 전용 시드 파일 경로
+const BUNDLED_FILE_PATH = path.join(process.cwd(), 'src', 'data', 'guest-links.json')
 
-// Ensure directory and file exist
+// Vercel / AWS 람다 환경에서는 /tmp 만 쓰기 가능
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NODE_ENV === 'production')
+const WRITABLE_DIR = isServerless ? os.tmpdir() : path.join(process.cwd(), 'src', 'data')
+const WRITABLE_FILE_PATH = path.join(WRITABLE_DIR, 'guest-links.json')
+
+// 인메모리 캐시 (서버리스 인스턴스 생명주기 동안 보존)
+let memoryStore: ShortLinkRecord[] | null = null
+
+// 저장소 파일 안전 보장
 function ensureDataFile() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true })
-  }
-  if (!fs.existsSync(FILE_PATH)) {
-    fs.writeFileSync(FILE_PATH, JSON.stringify([], null, 2), 'utf-8')
+  try {
+    if (!fs.existsSync(WRITABLE_DIR)) {
+      fs.mkdirSync(WRITABLE_DIR, { recursive: true })
+    }
+    if (!fs.existsSync(WRITABLE_FILE_PATH)) {
+      let initialData = '[]'
+      try {
+        if (fs.existsSync(BUNDLED_FILE_PATH)) {
+          initialData = fs.readFileSync(BUNDLED_FILE_PATH, 'utf-8')
+        }
+      } catch (seedErr) {
+        console.warn('Could not read bundled seed file:', seedErr)
+      }
+      fs.writeFileSync(WRITABLE_FILE_PATH, initialData, 'utf-8')
+    }
+  } catch (err) {
+    console.warn('ensureDataFile fallback to memory:', err)
   }
 }
 
-// Read all guest links
+// 모든 게스트 링크 안전 조회
 export function getAllGuestLinks(): ShortLinkRecord[] {
   try {
     ensureDataFile()
-    const content = fs.readFileSync(FILE_PATH, 'utf-8')
-    return JSON.parse(content || '[]')
+    if (fs.existsSync(WRITABLE_FILE_PATH)) {
+      const content = fs.readFileSync(WRITABLE_FILE_PATH, 'utf-8')
+      const parsed = JSON.parse(content || '[]')
+      memoryStore = parsed
+      return parsed
+    }
+    if (fs.existsSync(BUNDLED_FILE_PATH)) {
+      const content = fs.readFileSync(BUNDLED_FILE_PATH, 'utf-8')
+      const parsed = JSON.parse(content || '[]')
+      memoryStore = parsed
+      return parsed
+    }
   } catch (err) {
-    console.error('Failed to read guest links:', err)
-    return []
+    console.warn('Failed to read file from disk, using memory store:', err)
+  }
+  return memoryStore || []
+}
+
+function writeLinksSafely(links: ShortLinkRecord[]) {
+  memoryStore = links
+  try {
+    ensureDataFile()
+    fs.writeFileSync(WRITABLE_FILE_PATH, JSON.stringify(links, null, 2), 'utf-8')
+  } catch (err) {
+    console.warn('writeLinksSafely warning (persisted in memory only):', err)
   }
 }
 
-// Save a guest link (or multi-link profile)
+// Save a guest link (or multi-link profile) - NEVER throws
 export function saveGuestLink(record: Omit<ShortLinkRecord, 'id' | 'created_at' | 'is_active'>): ShortLinkRecord {
-  ensureDataFile()
-  const links = getAllGuestLinks()
+  try {
+    const links = getAllGuestLinks()
+    const existingIndex = links.findIndex(l => l.short_code === record.short_code)
 
-  // Check duplicate short_code
-  const existingIndex = links.findIndex(l => l.short_code === record.short_code)
-  
-  const newLink: ShortLinkRecord = {
-    id: `guest-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-    ...record,
-    is_active: true,
-    created_at: new Date().toISOString(),
-    clicks_count: 0
+    const newLink: ShortLinkRecord = {
+      id: `guest-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      ...record,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      clicks_count: 0
+    }
+
+    if (existingIndex >= 0) {
+      links[existingIndex] = newLink
+    } else {
+      links.unshift(newLink)
+    }
+
+    const trimmed = links.slice(0, 1000)
+    writeLinksSafely(trimmed)
+    return newLink
+  } catch (err) {
+    console.error('saveGuestLink error fallback:', err)
+    return {
+      id: `guest-${Date.now()}`,
+      ...record,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      clicks_count: 0
+    }
   }
-
-  if (existingIndex >= 0) {
-    links[existingIndex] = newLink
-  } else {
-    links.unshift(newLink)
-  }
-
-  // Keep last 1000 guest links
-  const trimmed = links.slice(0, 1000)
-  fs.writeFileSync(FILE_PATH, JSON.stringify(trimmed, null, 2), 'utf-8')
-  return newLink
 }
 
-// Find link by short_code
+// Find link by short_code - NEVER throws
 export function findGuestLink(shortCode: string): ShortLinkRecord | null {
-  const links = getAllGuestLinks()
-  const found = links.find(l => l.short_code === shortCode && l.is_active)
-  return found || null
+  try {
+    const links = getAllGuestLinks()
+    const found = links.find(l => l.short_code === shortCode && l.is_active)
+    return found || null
+  } catch (err) {
+    console.warn('findGuestLink error:', err)
+    return null
+  }
 }
 
 // Increment clicks for guest link
 export function recordGuestClick(shortCode: string) {
   try {
-    ensureDataFile()
     const links = getAllGuestLinks()
     const found = links.find(l => l.short_code === shortCode)
     if (found) {
       found.clicks_count = (found.clicks_count || 0) + 1
-      fs.writeFileSync(FILE_PATH, JSON.stringify(links, null, 2), 'utf-8')
+      writeLinksSafely(links)
     }
   } catch (err) {
-    console.error('Failed to record guest click:', err)
+    console.warn('Failed to record guest click:', err)
   }
 }
 
 // Increment likes for guest link
 export function incrementGuestLinkLikes(shortCode: string): number {
   try {
-    ensureDataFile()
     const links = getAllGuestLinks()
     const found = links.find(l => l.short_code === shortCode)
     if (found) {
       found.likes_count = (found.likes_count || 0) + 1
-      fs.writeFileSync(FILE_PATH, JSON.stringify(links, null, 2), 'utf-8')
+      writeLinksSafely(links)
       return found.likes_count
     }
   } catch (err) {
-    console.error('Failed to increment guest likes:', err)
+    console.warn('Failed to increment guest likes:', err)
   }
   return 1
 }
@@ -159,7 +210,6 @@ export function incrementGuestLinkLikes(shortCode: string): number {
 // Claim guest links to logged in user
 export function claimGuestLinksForUser(userId: string, shortCodes: string[]): number {
   try {
-    ensureDataFile()
     const links = getAllGuestLinks()
     let claimedCount = 0
     links.forEach(l => {
@@ -169,12 +219,11 @@ export function claimGuestLinksForUser(userId: string, shortCodes: string[]): nu
       }
     })
     if (claimedCount > 0) {
-      fs.writeFileSync(FILE_PATH, JSON.stringify(links, null, 2), 'utf-8')
+      writeLinksSafely(links)
     }
     return claimedCount
   } catch (err) {
-    console.error('Failed to claim guest links:', err)
+    console.warn('Failed to claim guest links:', err)
     return 0
   }
 }
-
