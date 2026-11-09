@@ -32,6 +32,12 @@ export function RevampedShortenerWidget() {
   } | null>(null)
   const [copied, setCopied] = useState(false)
 
+  const [mountedTs, setMountedTs] = useState<number>(0)
+
+  React.useEffect(() => {
+    setMountedTs(Date.now())
+  }, [])
+
   // 커스텀 단축어 실시간 유효성 피드백
   const handleCustomCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.trim()
@@ -80,6 +86,7 @@ export function RevampedShortenerWidget() {
     try {
       const formData = new FormData()
       formData.append('longUrl', longUrl.trim())
+      formData.append('_ts', mountedTs.toString())
       if (customCode.trim()) {
         formData.append('customCode', customCode.trim())
       }
@@ -135,6 +142,17 @@ export function RevampedShortenerWidget() {
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 매크로 방어용 허니팟 트랩 (인간에게는 보이지 않음) */}
+          <input
+            type="text"
+            name="hp_trap"
+            value=""
+            readOnly
+            tabIndex={-1}
+            autoComplete="off"
+            className="hidden opacity-0 absolute -z-50 h-0 w-0 pointer-events-none"
+            aria-hidden="true"
+          />
           
           {/* URL 인풋창 */}
           <div className="space-y-1.5 text-left">

@@ -148,8 +148,12 @@ function LoginFormContent() {
               </div>
 
               {errorParam && (
-                <div className="my-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs text-center font-medium">
-                  로그인 인증에 실패했습니다. 다시 시도해 주세요.
+                <div className="my-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-center font-medium leading-relaxed">
+                  {errorParam === 'too_many_requests' ? (
+                    <span>⚠️ 단시간 내 연속 로그인이 감지되었습니다. 매크로 방지를 위해 잠시 후 다시 시도해 주세요.</span>
+                  ) : (
+                    <span>로그인 인증에 실패했습니다. 다시 시도해 주세요.</span>
+                  )}
                 </div>
               )}
 

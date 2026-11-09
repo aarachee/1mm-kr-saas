@@ -2,9 +2,11 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 import { saveGuestLink, findGuestLink, incrementGuestLinkLikes, claimGuestLinksForUser } from '@/lib/linkStorage'
 import { validateCustomSlug } from '@/lib/reservedWords'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 function generateShortCode() {
   // 영문 소문자 + 숫자 3~4자리 초단축 코드 생성
@@ -32,6 +34,38 @@ export async function createShortLink(formData: FormData): Promise<{
   longUrl?: string
   isGuest?: boolean
 }> {
+  // 1. 매크로 방어: 허니팟(Honeypot) 필드 검증 (사람에겐 보이지 않는 필드)
+  const hpTrap = (formData.get('hp_trap') as string || '').trim()
+  if (hpTrap.length > 0) {
+    console.warn('[Macro Guard] Honeypot triggered, blocking request.')
+    return { error: '비정상적인 접근이 감지되었습니다.' }
+  }
+
+  // 2. 매크로 방어: 초고속 스크립트 제출 시간 검증 (400ms 미만 차단)
+  const renderTs = Number(formData.get('_ts'))
+  if (renderTs && Date.now() - renderTs < 400) {
+    return { error: '요청 속도가 너무 빠릅니다. 잠시 후 다시 시도해주세요.' }
+  }
+
+  // 3. 매크로 방어: IP 기반 속도 제한 (동일 IP에서 30초 내 최대 2개 생성)
+  try {
+    const headersList = await headers()
+    const clientIp = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                     headersList.get('x-real-ip') || 
+                     'unknown'
+    const limitCheck = checkRateLimit(clientIp, 'create_link', {
+      windowMs: 30 * 1000,
+      max: 2,
+    })
+    if (!limitCheck.allowed) {
+      return { 
+        error: `매크로 방지를 위해 생성 속도를 제한하고 있습니다. (${limitCheck.retryAfterSeconds}초 후 다시 시도)` 
+      }
+    }
+  } catch (ipErr) {
+    // 헤더 조회 실패 시 안전하게 계속 진행
+  }
+
   const rawLongUrl = formData.get('longUrl') as string
   const rawLongUrlB = formData.get('longUrlB') as string
   const pixelId = formData.get('pixelId') as string
