@@ -40,6 +40,26 @@ export interface ShortLinkRecord {
   creator_name?: string
   creator_desc?: string
   products?: NumberedProductItem[]
+  // 1mm 개별 마이크로 페이지 (꾸미기, 전시, 판매)
+  page_mode?: boolean
+  profile_title?: string
+  profile_bio?: string
+  profile_image?: string
+  theme?: 'dark' | 'light' | 'neon'
+  social_links?: {
+    instagram?: string
+    youtube?: string
+    tiktok?: string
+    kakao?: string
+    blog?: string
+  }
+  digital_product?: {
+    title: string
+    price: number
+    original_price?: number
+    description?: string
+    file_type?: string
+  }
 }
 
 const DATA_DIR = path.join(process.cwd(), 'src', 'data')

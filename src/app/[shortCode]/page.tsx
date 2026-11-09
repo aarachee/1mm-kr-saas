@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { findGuestLink, recordGuestClick, ShortLinkRecord } from '@/lib/linkStorage'
 import { findDigitalProductBySlug } from '@/lib/digitalProducts'
 import { detectInAppBrowser } from '@/lib/inAppEscape'
+import { MicroLandingPage } from '@/components/MicroLandingPage'
 import Script from 'next/script'
 import { ExternalLink, Zap, ShieldCheck } from 'lucide-react'
 
@@ -51,6 +52,12 @@ export default async function RedirectPage({
   }
 
   const link = targetLink
+
+  // 1.5 개별 마이크로 페이지(꾸미기, 전시, 판매) 모드인 경우 랜딩페이지 렌더링
+  if (link.page_mode || link.is_multilink || link.is_product_board) {
+    return <MicroLandingPage link={link} />
+  }
+
   let targetUrl = link.long_url
   let chosenVariant = 'A'
 

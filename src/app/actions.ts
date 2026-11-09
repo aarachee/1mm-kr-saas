@@ -4,9 +4,16 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 import { saveGuestLink, findGuestLink, incrementGuestLinkLikes, claimGuestLinksForUser } from '@/lib/linkStorage'
+import { validateCustomSlug } from '@/lib/reservedWords'
 
 function generateShortCode() {
-  return Math.random().toString(36).substring(2, 8)
+  // 영문 소문자 + 숫자 3~4자리 초단축 코드 생성
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
+  for (let i = 0; i < 4; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
 }
 
 function normalizeUrl(url: string): string {
@@ -52,10 +59,21 @@ export async function createShortLink(formData: FormData): Promise<{
   const longUrl = normalizeUrl(cleanUrlA)
   const longUrlB = cleanUrlB ? normalizeUrl(cleanUrlB) : null
 
-  // 커스텀 단축어가 있으면 검증 후 사용, 없으면 랜덤 6자리
-  let shortCode = customCode ? customCode.trim() : generateShortCode()
-  if (customCode && !/^[a-zA-Z0-9-_가-힣]+$/.test(shortCode)) {
-    return { error: '단축어는 한글, 영문, 숫자, 하이픈(-), 언더바(_)만 가능합니다.' }
+  const rawPageMode = formData.get('pageMode') as string
+  const isPageMode = rawPageMode === 'true' || rawPageMode === 'on'
+  const profileTitle = (formData.get('profileTitle') as string || '').trim()
+  const profileBio = (formData.get('profileBio') as string || '').trim()
+
+  // 커스텀 단축어가 있으면 금칙어/유보어 및 형식 정밀 검증
+  let shortCode = ''
+  if (customCode && customCode.trim()) {
+    const slugCheck = validateCustomSlug(customCode)
+    if (!slugCheck.valid) {
+      return { error: slugCheck.reason }
+    }
+    shortCode = slugCheck.code || customCode.trim()
+  } else {
+    shortCode = generateShortCode()
   }
 
   try {
@@ -63,6 +81,16 @@ export async function createShortLink(formData: FormData): Promise<{
     const { data: { user } } = await supabase.auth.getUser()
 
     if (user) {
+      // 무료 회원 슬롯 제한 검사 (최대 3개)
+      const { count } = await supabase
+        .from('links')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+
+      if (count !== null && count >= 3) {
+        return { error: '얼리버드 무료 슬롯 3개를 모두 사용하셨습니다. (Pro 플랜 시 무제한 확장)' }
+      }
+
       // 1. 로그인 사용자의 경우: Supabase에 저장
       const { error } = await supabase
         .from('links')
@@ -87,7 +115,10 @@ export async function createShortLink(formData: FormData): Promise<{
           long_url: longUrl,
           long_url_b: longUrlB,
           pixel_id: pixelId || null,
-          user_id: user.id
+          user_id: user.id,
+          page_mode: isPageMode,
+          profile_title: profileTitle || undefined,
+          profile_bio: profileBio || undefined
         })
       } else {
         // 캐싱 용도로 로컬에도 기록
@@ -96,7 +127,10 @@ export async function createShortLink(formData: FormData): Promise<{
           long_url: longUrl,
           long_url_b: longUrlB,
           pixel_id: pixelId || null,
-          user_id: user.id
+          user_id: user.id,
+          page_mode: isPageMode,
+          profile_title: profileTitle || undefined,
+          profile_bio: profileBio || undefined
         })
       }
 
@@ -207,13 +241,15 @@ export async function updateShortCode(linkId: number, newCode: string): Promise<
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: '로그인이 필요합니다.' }
 
-  if (!newCode || !/^[a-zA-Z0-9-_가-힣]+$/.test(newCode)) {
-    return { error: '한글, 영문, 숫자, 하이픈(-), 언더바(_)만 사용할 수 있습니다.' }
+  const slugCheck = validateCustomSlug(newCode)
+  if (!slugCheck.valid) {
+    return { error: slugCheck.reason }
   }
+  const cleanCode = slugCheck.code || newCode.trim()
 
   const { error } = await supabase
     .from('links')
-    .update({ short_code: newCode })
+    .update({ short_code: cleanCode })
     .eq('id', linkId)
     .eq('user_id', user.id) // 보안: 내 링크만 수정 가능
 
