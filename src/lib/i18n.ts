@@ -78,6 +78,19 @@ export const translations = {
     guideItem4Title: '3개 무료 슬롯 정책',
     guideItem4Desc: '고유 한글 또는 브랜드 주소 1개와 영문/숫자 초단축 주소 2개를 무료로 제공합니다.',
 
+    // 로그인 절차 및 생성 조건 안내 모달
+    loginModalTitle: '로그인 및 생성 조건 안내',
+    loginModalSubtitle: '매크로 생성 방지 및 고유 주소 소유권 보호를 위해 Google 로그인이 필요합니다.',
+    loginCondition1Title: '얼리버드 3개 무료 슬롯',
+    loginCondition1Desc: '한글/영문 고유 단축 주소 및 미니홈피를 계정당 최대 3개까지 영구 무료로 제공합니다.',
+    loginCondition2Title: '매크로 및 스팸 원천 차단',
+    loginCondition2Desc: '무분별한 자동화 생성을 차단하여 1mm.kr 링크의 높은 도메인 신뢰도를 유지합니다.',
+    loginCondition3Title: '실시간 통계 및 주소 관리',
+    loginCondition3Desc: '클릭 수 집계, 유입 경로 분석, QR 코드 저장 및 링크 수정 권한이 대시보드에 보존됩니다.',
+    continueWithGoogle: 'Google 계정으로 계속하기',
+    close: '닫기',
+    loginRequiredError: '단축 주소를 생성하려면 Google 로그인이 필요합니다.',
+
     // 푸터
     footerTop: '맨 위로 ↑',
 
@@ -156,6 +169,19 @@ export const translations = {
     guideItem3Desc: 'Provides an all-in-one mobile page with profile, multi-links, product recommendations, and digital checkout.',
     guideItem4Title: '3 Free Slots Policy',
     guideItem4Desc: 'Offers 1 custom brand slug and 2 ultra-short alphanumeric slugs for free.',
+
+    // Login Modal & Conditions
+    loginModalTitle: 'Sign In & Terms of Creation',
+    loginModalSubtitle: 'Google sign-in is required to prevent automated macro spam and secure your link ownership.',
+    loginCondition1Title: '3 Free Early-Bird Slots',
+    loginCondition1Desc: 'Up to 3 custom short links and mini-pages free forever per account.',
+    loginCondition2Title: 'Automated Bot & Spam Prevention',
+    loginCondition2Desc: 'Protects the domain reputation of 1mm.kr by stopping automated spam links.',
+    loginCondition3Title: 'Real-Time Analytics & Management',
+    loginCondition3Desc: 'Access click counts, traffic referrers, QR codes, and link editing safely in your dashboard.',
+    continueWithGoogle: 'Continue with Google',
+    close: 'Close',
+    loginRequiredError: 'Google sign-in is required to create a short link.',
 
     // Footer
     footerTop: 'Top ↑',

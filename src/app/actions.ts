@@ -33,6 +33,7 @@ export async function createShortLink(formData: FormData): Promise<{
   shortUrl?: string
   longUrl?: string
   isGuest?: boolean
+  requireLogin?: boolean
 }> {
   // 1. 매크로 방어: 허니팟(Honeypot) 필드 검증 (사람에겐 보이지 않는 필드)
   const hpTrap = (formData.get('hp_trap') as string || '').trim()
@@ -120,99 +121,43 @@ export async function createShortLink(formData: FormData): Promise<{
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (user) {
-      // 무료 회원 슬롯 제한 검사 (최대 3개)
-      const { count } = await supabase
-        .from('links')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-
-      if (count !== null && count >= 3) {
-        return { error: '얼리버드 무료 슬롯 3개를 모두 사용하셨습니다. (Pro 플랜 시 무제한 확장)' }
-      }
-
-      // 1. 로그인 사용자의 경우: Supabase에 저장
-      const { error } = await supabase
-        .from('links')
-        .insert([
-          { 
-            user_id: user.id, 
-            long_url: longUrl, 
-            long_url_b: longUrlB,
-            short_code: shortCode, 
-            title: dbTitle,
-            pixel_id: pixelId || null 
-          }
-        ])
-
-      if (error) {
-        console.error('Supabase link insert error:', error)
-        if (error.code === '23505') {
-          return { error: `이미 사용 중인 단축 주소입니다: ${shortCode}` }
-        }
-        // Supabase 에러 시 로컬 스토리지로 fallback 저장
-        saveGuestLink({
-          short_code: shortCode,
-          long_url: longUrl,
-          long_url_b: longUrlB,
-          title: dbTitle,
-          is_public: isPublic,
-          pixel_id: pixelId || null,
-          user_id: user.id,
-          page_mode: isPageMode,
-          profile_title: profileTitle || undefined,
-          profile_bio: profileBio || undefined
-        })
-      } else {
-        // 캐싱 용도로 로컬에도 기록
-        saveGuestLink({
-          short_code: shortCode,
-          long_url: longUrl,
-          long_url_b: longUrlB,
-          title: dbTitle,
-          is_public: isPublic,
-          pixel_id: pixelId || null,
-          user_id: user.id,
-          page_mode: isPageMode,
-          profile_title: profileTitle || undefined,
-          profile_bio: profileBio || undefined
-        })
-      }
-
-      revalidatePath('/dashboard')
-      revalidatePath('/')
+    if (!user) {
       return { 
-        success: true, 
-        shortCode, 
-        shortUrl: `/${shortCode}`,
-        longUrl,
-        isGuest: false 
+        error: '단축 주소를 생성하려면 Google 로그인이 필요합니다.',
+        requireLogin: true 
       }
-    } else {
-      // 2. 비로그인(게스트/일반인)의 경우:
-      const existing = findGuestLink(shortCode)
-      if (existing) {
-        shortCode = generateShortCode()
-      }
+    }
 
-      // Supabase에도 user_id: null로 저장 시도하여 전체 시스템에 동기화
-      try {
-        await supabase
-          .from('links')
-          .insert([
-            {
-              user_id: null,
-              long_url: longUrl,
-              long_url_b: longUrlB,
-              short_code: shortCode,
-              title: dbTitle,
-              pixel_id: pixelId || null
-            }
-          ])
-      } catch (insertErr) {
-        console.warn('Guest link supabase insert fallback:', insertErr)
-      }
+    // 무료 회원 슬롯 제한 검사 (최대 3개)
+    const { count } = await supabase
+      .from('links')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
 
+    if (count !== null && count >= 3) {
+      return { error: '얼리버드 무료 슬롯 3개를 모두 사용하셨습니다. (Pro 플랜 시 무제한 확장)' }
+    }
+
+    // 1. 로그인 사용자의 경우: Supabase에 저장
+    const { error } = await supabase
+      .from('links')
+      .insert([
+        { 
+          user_id: user.id, 
+          long_url: longUrl, 
+          long_url_b: longUrlB,
+          short_code: shortCode, 
+          title: dbTitle,
+          pixel_id: pixelId || null 
+        }
+      ])
+
+    if (error) {
+      console.error('Supabase link insert error:', error)
+      if (error.code === '23505') {
+        return { error: `이미 사용 중인 단축 주소입니다: ${shortCode}` }
+      }
+      // Supabase 에러 시 로컬 스토리지로 fallback 저장
       saveGuestLink({
         short_code: shortCode,
         long_url: longUrl,
@@ -220,21 +165,35 @@ export async function createShortLink(formData: FormData): Promise<{
         title: dbTitle,
         is_public: isPublic,
         pixel_id: pixelId || null,
-        user_id: null,
+        user_id: user.id,
         page_mode: isPageMode,
         profile_title: profileTitle || undefined,
         profile_bio: profileBio || undefined
       })
+    } else {
+      // 캐싱 용도로 로컬에도 기록
+      saveGuestLink({
+        short_code: shortCode,
+        long_url: longUrl,
+        long_url_b: longUrlB,
+        title: dbTitle,
+        is_public: isPublic,
+        pixel_id: pixelId || null,
+        user_id: user.id,
+        page_mode: isPageMode,
+        profile_title: profileTitle || undefined,
+        profile_bio: profileBio || undefined
+      })
+    }
 
-      revalidatePath('/dashboard')
-      revalidatePath('/')
-      return { 
-        success: true, 
-        shortCode, 
-        shortUrl: `/${shortCode}`,
-        longUrl,
-        isGuest: true 
-      }
+    revalidatePath('/dashboard')
+    revalidatePath('/')
+    return { 
+      success: true, 
+      shortCode, 
+      shortUrl: `/${shortCode}`,
+      longUrl,
+      isGuest: false 
     }
   } catch (err: any) {
     console.error('createShortLink error:', err)
