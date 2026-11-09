@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react'
 import { 
-  Link2, Sparkles, Copy, Check, ExternalLink, 
+  Link2, Copy, Check, ExternalLink, 
   ArrowRight, ShieldCheck, QrCode, SlidersHorizontal, 
-  Zap, ShoppingBag, Eye, Lock
+  Layers
 } from 'lucide-react'
 import QRCode from 'qrcode'
 import { createShortLink } from '@/app/actions'
@@ -58,9 +58,9 @@ export function RevampedShortenerWidget() {
     if (!check.valid) {
       setSlugNotice({ isWarning: true, message: check.reason || '사용할 수 없는 단축어입니다.' })
     } else if (check.isPremiumReserved) {
-      setSlugNotice({ isWarning: true, message: '💎 골드 프리미엄 유보어입니다 (프로 플랜에서 선점 가능).' })
+      setSlugNotice({ isWarning: true, message: '[유보어] 골드 프리미엄 키워드입니다 (프로 플랜에서 선점 가능).' })
     } else {
-      setSlugNotice({ isWarning: false, message: `✨ '1mm.kr/${val}' 사용 가능한 주소입니다!` })
+      setSlugNotice({ isWarning: false, message: `[사용 가능] '1mm.kr/${val}' 사용 가능한 주소입니다.` })
     }
   }
 
@@ -108,7 +108,7 @@ export function RevampedShortenerWidget() {
         const qr = await QRCode.toDataURL(fullShortUrl, {
           width: 400,
           margin: 2,
-          color: { dark: '#020617', light: '#ffffff' }
+          color: { dark: '#090A0C', light: '#ffffff' }
         })
 
         setShortResult({
@@ -136,10 +136,10 @@ export function RevampedShortenerWidget() {
     <div className="w-full max-w-2xl mx-auto">
       
       {/* 1. 단축 생성 메인 카드 */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+      <div className="bg-[#161B22] border border-[#21262D] rounded-2xl p-5 sm:p-7 shadow-xl relative overflow-hidden">
         
-        {/* 장식용 글로우 */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
+        {/* 장식용 코랄 레드 앰비언트 */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#F04438]/10 blur-[80px] rounded-full pointer-events-none" />
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* 매크로 방어용 허니팟 트랩 (인간에게는 보이지 않음) */}
@@ -156,13 +156,13 @@ export function RevampedShortenerWidget() {
           
           {/* URL 인풋창 */}
           <div className="space-y-1.5 text-left">
-            <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
+            <label className="text-xs font-semibold text-[#EAECF0] flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Link2 className="w-3.5 h-3.5 text-indigo-400" />
-                <span>단축할 긴 URL 입력</span>
+                <Link2 className="w-3.5 h-3.5 text-[#F04438]" />
+                <span>단축할 대상 URL 입력</span>
               </span>
-              <span className="text-[11px] font-normal text-slate-400">
-                카톡/인스타/쿠팡 링크 자동 정제
+              <span className="text-[11px] font-mono text-[#667085]">
+                모바일 공유 텍스트 자동 정제
               </span>
             </label>
 
@@ -173,49 +173,49 @@ export function RevampedShortenerWidget() {
                 onChange={(e) => setLongUrl(e.target.value)}
                 placeholder="https://example.com/very-long-url-path..."
                 required
-                className="w-full h-13 pl-4 pr-12 rounded-2xl bg-slate-950/80 border border-slate-800 focus:border-indigo-500 text-sm sm:text-base text-slate-100 placeholder-slate-500 focus:outline-none transition-all shadow-inner font-mono"
+                className="w-full h-12 pl-4 pr-12 rounded-xl bg-[#0D1117] border border-[#30363D] focus:border-[#F04438] text-sm text-[#EAECF0] placeholder-[#667085] focus:outline-none transition-colors font-mono"
               />
               {longUrl && (
                 <button
                   type="button"
                   onClick={() => setLongUrl('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 hover:text-slate-300 p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#667085] hover:text-[#EAECF0] p-1 font-mono"
                 >
-                  지우기
+                  CLEAR
                 </button>
               )}
             </div>
           </div>
 
-          {/* 고급 옵션 토글 버튼 (커스텀 단축어 & 개별 페이지 모드) */}
+          {/* 옵션 토글 버튼 (커스텀 단축어 & 개별 페이지 모드) */}
           <div className="pt-1 flex items-center justify-between">
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#F04438] hover:text-[#FF5A5F] transition-colors"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>{showAdvanced ? '옵션 접기 ▲' : '나만의 주소(단어) 지정 & 개별 페이지 꾸미기 ▼'}</span>
+              <span>{showAdvanced ? '옵션 설정 닫기' : '커스텀 단축어 및 개별 페이지 옵션'}</span>
             </button>
 
-            <span className="text-[11px] text-slate-500 hidden sm:inline-block">
-              영문/숫자 3자 또는 한글 1개 무료
+            <span className="text-[11px] font-mono text-[#667085] hidden sm:inline-block">
+              3-CHAR / KOREAN SLUG
             </span>
           </div>
 
           {/* 펼쳐지는 고급 설정 패널 */}
           {showAdvanced && (
-            <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-4 text-left animate-in fade-in duration-200">
+            <div className="p-4 rounded-xl bg-[#0D1117] border border-[#30363D] space-y-4 text-left">
               
               {/* 커스텀 단축어 지정 */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
+                <label className="text-xs font-semibold text-[#EAECF0] flex items-center justify-between">
                   <span>원하는 단축어 지정 (선택)</span>
-                  <span className="text-[10px] text-indigo-400">최소 3자 이상 (한글 가능)</span>
+                  <span className="text-[10px] font-mono text-[#98A2B3]">최소 3자 이상 (한글 지원)</span>
                 </label>
 
-                <div className="flex items-center rounded-xl bg-slate-900 border border-slate-800 px-3 h-11 focus-within:border-indigo-500 transition-colors">
-                  <span className="text-xs font-mono font-bold text-slate-500 select-none">
+                <div className="flex items-center rounded-lg bg-[#161B22] border border-[#30363D] px-3 h-10 focus-within:border-[#F04438] transition-colors">
+                  <span className="text-xs font-mono font-bold text-[#667085] select-none">
                     1mm.kr/
                   </span>
                   <input
@@ -223,13 +223,13 @@ export function RevampedShortenerWidget() {
                     value={customCode}
                     onChange={handleCustomCodeChange}
                     placeholder="민수 (또는 abc)"
-                    className="flex-1 bg-transparent border-none text-xs sm:text-sm text-slate-100 placeholder-slate-600 focus:outline-none pl-1"
+                    className="flex-1 bg-transparent border-none text-xs text-[#EAECF0] placeholder-[#667085] focus:outline-none pl-1"
                   />
                 </div>
 
                 {slugNotice && (
-                  <p className={`text-[11px] font-medium mt-1 ${
-                    slugNotice.isWarning ? 'text-amber-400' : 'text-emerald-400'
+                  <p className={`text-[11px] font-medium font-mono mt-1 ${
+                    slugNotice.isWarning ? 'text-[#F04438]' : 'text-[#EAECF0]'
                   }`}>
                     {slugNotice.message}
                   </p>
@@ -237,15 +237,15 @@ export function RevampedShortenerWidget() {
               </div>
 
               {/* 개별 마이크로 페이지 모드 토글 */}
-              <div className="pt-2 border-t border-slate-800/80 space-y-3">
+              <div className="pt-2 border-t border-[#21262D] space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                      <span>1mm 개별 전시 & 판매 페이지 생성</span>
+                      <Layers className="w-3.5 h-3.5 text-[#F04438]" />
+                      <span>1mm 개별 전시 및 판매 페이지 생성</span>
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      단순 리다이렉트 대신 프로필, 꿀템 번호판, 전자책 결제창이 포함된 모바일 미니샵을 띄웁니다.
+                    <p className="text-[11px] text-[#98A2B3] mt-0.5">
+                      단순 리다이렉트 대신 프로필, 꿀템 번호판, 전자책 결제창이 포함된 모바일 미니샵을 제공합니다.
                     </p>
                   </div>
 
@@ -253,7 +253,7 @@ export function RevampedShortenerWidget() {
                     type="checkbox"
                     checked={isPageMode}
                     onChange={(e) => setIsPageMode(e.target.checked)}
-                    className="w-5 h-5 rounded-lg accent-indigo-500 cursor-pointer"
+                    className="w-4 h-4 rounded accent-[#F04438] cursor-pointer"
                   />
                 </div>
 
@@ -264,14 +264,14 @@ export function RevampedShortenerWidget() {
                       placeholder="프로필 타이틀 (예: 크리에이터 민수)"
                       value={profileTitle}
                       onChange={(e) => setProfileTitle(e.target.value)}
-                      className="h-10 px-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                      className="h-9 px-3 rounded-lg bg-[#161B22] border border-[#30363D] text-xs text-[#EAECF0] placeholder-[#667085] focus:outline-none focus:border-[#F04438]"
                     />
                     <input
                       type="text"
                       placeholder="한 줄 소개 (Bio)"
                       value={profileBio}
                       onChange={(e) => setProfileBio(e.target.value)}
-                      className="h-10 px-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500"
+                      className="h-9 px-3 rounded-lg bg-[#161B22] border border-[#30363D] text-xs text-[#EAECF0] placeholder-[#667085] focus:outline-none focus:border-[#F04438]"
                     />
                   </div>
                 )}
@@ -282,7 +282,7 @@ export function RevampedShortenerWidget() {
 
           {/* 에러 메시지 */}
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-semibold text-left">
+            <div className="p-3 rounded-xl bg-[#C01025]/10 border border-[#C01025]/30 text-[#F04438] text-xs font-medium text-left">
               {errorMessage}
             </div>
           )}
@@ -291,17 +291,16 @@ export function RevampedShortenerWidget() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-13 rounded-2xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 transition-all active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+            className="w-full h-12 rounded-xl bg-[#F04438] hover:bg-[#D92D20] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.99] disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <span className="flex items-center gap-2">
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>국내 최단 링크 생성 중...</span>
+                <span>단축 링크 생성 처리 중...</span>
               </span>
             ) : (
               <>
-                <Zap className="w-4 h-4 fill-current text-amber-300" />
-                <span>3초 만에 무료 단축하기</span>
+                <span>단축 주소 생성하기</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -310,34 +309,34 @@ export function RevampedShortenerWidget() {
 
         {/* 2. 생성 완료 결과 카드 */}
         {shortResult && (
-          <div className="mt-6 p-5 rounded-2xl bg-slate-950 border border-emerald-500/30 text-left space-y-4 animate-in fade-in zoom-in-95 duration-200">
+          <div className="mt-6 p-5 rounded-xl bg-[#0D1117] border border-[#30363D] text-left space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                  <Check className="w-3.5 h-3.5" />
+                <div className="w-5 h-5 rounded-full bg-[#F04438]/20 text-[#F04438] flex items-center justify-center">
+                  <Check className="w-3 h-3" />
                 </div>
-                <span className="text-xs font-black text-emerald-300 uppercase tracking-wider">
-                  단축 링크 생성 완료
+                <span className="text-xs font-mono font-bold text-[#EAECF0] uppercase tracking-wider">
+                  LINK CREATED SUCCESSFULLY
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 font-mono">
-                {shortResult.shortUrl.length}글자 초단축
+              <span className="text-[10px] text-[#667085] font-mono">
+                {shortResult.shortUrl.length} CHARS
               </span>
             </div>
 
             {/* 단축 URL & 복사 버튼 */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="font-mono text-sm sm:text-base font-black text-white select-all break-all">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-[#161B22] border border-[#21262D]">
+              <span className="font-mono text-sm sm:text-base font-bold text-white select-all break-all">
                 {shortResult.shortUrl}
               </span>
 
               <button
                 type="button"
                 onClick={handleCopy}
-                className="ml-3 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95 shadow-md shadow-indigo-500/20"
+                className="ml-3 px-3 py-1.5 rounded-lg bg-[#F04438] hover:bg-[#D92D20] text-white font-semibold text-xs flex items-center gap-1.5 shrink-0 transition-all active:scale-95"
               >
-                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? '복사됨!' : '링크 복사'}</span>
+                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                <span>{copied ? '복사됨' : '복사'}</span>
               </button>
             </div>
 
@@ -348,19 +347,19 @@ export function RevampedShortenerWidget() {
                   href={shortResult.shortUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold flex items-center gap-1 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-[#21262D] hover:bg-[#30363D] text-[#EAECF0] font-medium flex items-center gap-1 transition-colors"
                 >
-                  <span>내 링크 열어보기</span>
-                  <ExternalLink className="w-3 h-3" />
+                  <span>주소 열기</span>
+                  <ExternalLink className="w-3 h-3 text-[#98A2B3]" />
                 </a>
 
                 {shortResult.qrDataUrl && (
                   <a
                     href={shortResult.qrDataUrl}
                     download={`1mm_qr_${shortResult.shortCode}.png`}
-                    className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold flex items-center gap-1 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-[#21262D] hover:bg-[#30363D] text-[#EAECF0] font-medium flex items-center gap-1 transition-colors"
                   >
-                    <QrCode className="w-3 h-3 text-purple-400" />
+                    <QrCode className="w-3 h-3 text-[#F04438]" />
                     <span>QR 저장 (300 DPI)</span>
                   </a>
                 )}
@@ -368,9 +367,9 @@ export function RevampedShortenerWidget() {
 
               <Link
                 href="/login"
-                className="text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1 transition-colors"
+                className="text-[#F04438] hover:text-[#FF5A5F] font-semibold flex items-center gap-1 transition-colors"
               >
-                <span>대시보드에 영구 보관 & 실시간 통계 보기</span>
+                <span>대시보드에서 통계 확인하기</span>
                 <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
@@ -379,20 +378,16 @@ export function RevampedShortenerWidget() {
 
       </div>
 
-      {/* 3. 하단 신뢰 및 보안 태그 */}
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-500 font-medium">
+      {/* 3. 하단 보안 및 기술 표준 안내 */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-[11px] text-[#667085] font-mono">
         <span className="flex items-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-          <span>인스타·카톡 로그인 풀림 없는 인앱 탈출 딥링크</span>
+          <ShieldCheck className="w-3.5 h-3.5 text-[#F04438]" />
+          <span>IN-APP ESCAPE DEEP LINK ENGINE</span>
         </span>
         <span>•</span>
-        <span className="flex items-center gap-1">
-          <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-          <span>개별 전시 & 전자책 판매 페이지 지원</span>
-        </span>
+        <span>INDIVIDUAL SHOWCASE & COMMERCE</span>
       </div>
 
     </div>
   )
 }
-
