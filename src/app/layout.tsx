@@ -30,11 +30,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-[#F9FAFB] dark:bg-[#090A0C] text-[#101828] dark:text-[#EAECF0] transition-colors duration-150">
         <ThemeProvider
-          attribute="data-theme"
-          defaultTheme="trust"
-          themes={['trust', 'modern', 'creative']}
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
           {children}
         </ThemeProvider>
