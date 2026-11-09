@@ -197,30 +197,8 @@ export async function createShortLink(formData: FormData): Promise<{
     }
   } catch (err: any) {
     console.error('createShortLink error:', err)
-    // 예외 발생 시에도 게스트 저장소로 안전하게 처리
-    try {
-      saveGuestLink({
-        short_code: shortCode,
-        long_url: longUrl,
-        long_url_b: longUrlB,
-        title: dbTitle,
-        is_public: isPublic,
-        pixel_id: pixelId || null,
-        user_id: null,
-        page_mode: isPageMode,
-        profile_title: profileTitle || undefined,
-        profile_bio: profileBio || undefined
-      })
-    } catch (saveErr) {
-      console.error('Fallback saveGuestLink error:', saveErr)
-    }
-
     return { 
-      success: true, 
-      shortCode, 
-      shortUrl: `/${shortCode}`,
-      longUrl,
-      isGuest: true 
+      error: '단축 주소 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' 
     }
   }
 }
